@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Analyze Page{% endblock %}
+
+{% block content %}
+<style>
+    .lista {
+        list-style-type: none;
+    }   
+    .lista li{
+        display:inline;
+        padding-left:3px;
+        padding-right:3px;
+        float: left;
+    }
+</style>
+
+<main role="main" class="container p-5">
+    <h2>REPORTES</h2>
+    <div class="row">
+        <ul class="lista">
+            <li>
+                <form action="/rep/symbol" method="GET">
+                    <button type="submit" class="btn btn-dark">Symbol</button> 
+                </form>
+            </li>
+            <li>
+                <form action="/rep/error" method="GET">
+                    <button type="submit" class="btn btn-secondary">Error</button> 
+                 </form>
+            </li>
+        </ul>    
+    </div>
+    <div>
+        <div>
+            <img src="data:image/svg+xml;base64,{{chart}}" style="margin: auto;">
+        </div>
+        
+    </div>
+    
+{% endblock %}
