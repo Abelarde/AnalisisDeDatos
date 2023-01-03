@@ -1,0 +1,423 @@
+{% extends "base.html" %}
+{% block title %}Menú principal{% endblock %}
+
+{% block content %}
+
+<main role="main" class="container">
+    <div class="row-cols-10">
+        <h1 class="display-4">Data analysis</h1>
+    </div>    
+    <div class="row row-cols-10">   
+      <!--Tab menu-->     
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Carga de datos</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Parametrización</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Resultados</button>
+            </li>
+        </ul>
+          
+          <div class="tab-content" id="myTabContent">
+            <!--Carga de archivo-->
+            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">  
+              <form enctype="multipart/form-data">              
+                <div class="mb-3">
+                  <br>
+                  <label for="exampleInputPassword1" class="form-label">Archivo de datos</label>                  
+                  <input type="file" accept=".csv, .xls, .xlsx, .json" class="form-control" id="archivo_entrada" name="archivo_entrada" value="Cargar archivo">                   
+                </div>
+                <!--<button class="btn btn-primary" onclick="cargarArchivo()" >Cargar Archivo</button>   -->
+                <input type="button" class="btn btn-primary" value="Subir Archivo" id="botonCargarArchivo">                                
+              </form>            
+            </div>
+
+            <!--Menu de parametrización-->
+            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+              <form id="formularioAnalisis" name="formularioAnalisis">
+                <br>
+                <div class="mb-3">
+                  <label for="archivo" class="form-label">Archivo seleccionado</label>                                      
+                  <select id="archivoAnalisis" name="archivoAnalisis" class="form-select">
+                    <option value="0">-------------</option>
+                    {% for archivo in listaArchivos %}                    
+                    <option value="{{archivo}}">{{archivo}}</option>
+                    {% endfor %}
+                  </select>                                   
+                </div> 
+                <div class="mb-3" id="tabla-campos-div">                  
+                </div>                               
+                <div class="mb-3">
+                  <label for="prediccion" class="form-label">Predicción a realizar</label>                                      
+                  <select id="tipoAnalisis" name="tipoAnalisis" class="form-select">
+                    <option value="0">-------------</option>
+                    <option value="1">1. Tendencia de la infección por Covid-19 en un país</option>
+                    <option value="2">2. Predicción de Infertados en un País</option>
+                    <option value="3">3. Indice de Progresión de la pandemia</option>
+                    <option value="4">4. Predicción de mortalidad por COVID en un Departamento.</option>
+                    <option value="5">5. Predicción de mortalidad por COVID en un País.</option>
+                    <option value="6">6. Análisis del número de muertes por coronavirus en un País.</option>
+                    <option value="7">7. Tendencia del número de infectados por día de un País.</option>
+                    <option value="8">8. Predicción de casos de un país para un año.</option>
+                    <option value="9">9. Tendencia de la vacunación de en un País.</option>
+                    <option value="10">10. Ánalisis Comparativo de Vacunaciópn entre 2 paises.</option>
+                    <option value="11">11. Porcentaje de hombres infectados por covid-19 en un País desde el primer caso activo</option>
+                    <option value="12">12. Ánalisis Comparativo entres 2 o más paises o continentes.</option>
+                    <option value="13">13. Muertes promedio por casos confirmados y edad de covid 19 en un País.</option>
+                    <option value="14">14. Muertes según regiones de un país - Covid 19.</option>
+                    <option value="15">15. Tendencia de casos confirmados de Coronavirus en un departamento de un País.</option>
+                    <option value="16">16. Porcentaje de muertes frente al total de casos en un país, región o continente.</option>
+                    <option value="17">17. Tasa de comportamiento de casos activos en relación al número de muertes en un continente.</option>
+                    <option value="18">18. Comportamiento y clasificación de personas infectadas por COVID-19 por municipio en un País</option>
+                    <option value="19">19. Predicción de muertes en el último día del primer año de infecciones en un país.</option>
+                    <option value="20">20. Tasa de crecimiento de casos de COVID-19 en relación con nuevos casos diarios y tasa de muerte por COVID-19</option>
+                    <option value="21">21. Predicciones de casos y muertes en todo el mundo - Neural Network MLPRegressor</option>
+                    <option value="22">22. Tasa de mortalidad por coronavirus (COVID-19) en un país.</option>
+                    <option value="23">23. Factores de muerte por COVID-19 en un país.</option>
+                    <option value="24">24. Comparación entre el número de casos detectados y el número de pruebas de un país.</option>
+                    <option value="25">25. Predicción de casos confirmados por día</option>
+                  </select>                                   
+                </div>
+                <div class="mb-3">
+                  <label for="prediccion" class="form-label">Tipo de análisis</label>                                      
+                  <select id="tipoRegresion"  name="tipoRegresion" class="form-select">
+                    <option value="0">Predeterminado</option>
+                    <option value="1">Regresión lineal</option>
+                    <option value="2">Regresión polinomial</option>
+                  </select>                                   
+                </div>                
+                <div class="mb-3" id="parametros-div">                  
+                </div>  
+                <div class="mb-3" id="tablaPredicciones" name="tablaPredicciones">                  
+                </div>
+              </form>              
+              <button class="btn btn-primary"  id="botonLanzarAnalisis" onclick="lanzarAnalisis()">Comenzar análisis</button>
+            </div>
+            <!-- Menú de gestión de reportes-->
+            <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+              <div id="contenedorResultados" name="contenedorResultados">
+
+              </div>           
+            </div>
+          </div>
+    </div>           
+</main>
+
+<script type="text/javascript">  
+  // Primero limpiamos la consola de salida
+  document.getElementById("tipoAnalisis").onchange = function()
+  {
+    var opcion = document.getElementById("tipoAnalisis").value;
+    if(opcion==0) {return;}
+    $.ajax
+    ({
+            type: "POST",
+            url: '/getParametros',
+            dataType: "json",
+            data: {option:opcion},            
+            success: function(response)
+            {  
+              $('#parametros-div').empty();    
+              if(response != null && response != undefined)
+              {                
+                response.forEach(element => 
+                {
+                  var nuevoParametro = 
+                  '<div class="mb-3">\n' 
+                  +'<label for="label'+element.id+'" class="form-label">'+element.nombre+'</label>\n'
+                  +'<input type="text" class="form-control" id="'+element.id+'"  name="'+element.id+'" value="'+element.valorActual+'">\n'                  
+                  +'</div>\n';
+                    //console.log(nuevoParametro);
+                  $('#parametros-div').prepend(nuevoParametro);
+
+                });
+                var nuevoParametro = 
+                  '<div class="mb-3">\n' 
+                  +'<label for="labelReporte'+opcion+'" class="form-label">Codigo Reporte</label>\n'
+                  +'<input type="number" class="form-control" id="idReporte" name="idReporte" value="'+opcion+'" disabled>\n'                  
+                  +'</div>\n';
+                    //console.log(nuevoParametro);
+                  $('#parametros-div').prepend(nuevoParametro);      
+                                                                                                                    
+                var predicciones = 
+                '<div class="mb-3" id="tablaPredicciones" name="tablaPredicciones">\n'
+                +'<label for="labelPredicciones" class="form-label">Valor a predecir</label>\n'                    
+                +'<select id="valoresPredecidos" class="form-control-valores-predecidos form-select" multiple="multiple">\n'                  
+                +'</select>\n';
+                +'</div>\n';
+                $('#parametros-div').append(predicciones);      
+
+                $(".form-control-valores-predecidos").select2({
+                    tags: true,
+                    tokenSeparators: [',', ' ']
+                })
+
+                toastr.success('Se han cargado los parámetros.');    
+              }              
+              else
+              {
+                toastr.warning('No se han encontrado los parámetros para este análisis.');    
+              }
+            },
+            error: function(error)
+            {                            
+                toastr.error('Error al conectar con el servidor');
+            }
+    });     
+  };
+
+  // Funcion para ir a traer las columnas de la tabla.
+  document.getElementById("archivoAnalisis").onchange = function()
+    {
+      var opcion = document.getElementById("archivoAnalisis").value;
+      if(opcion==0) 
+      {
+        $('#tabla-campos-div').empty();  
+        return;
+      }
+      $.ajax
+      ({
+              type: "POST",
+              url: '/getCampos',
+              dataType: "json",
+              data: {archivo:opcion},            
+              success: function(response)
+              {  
+                //console.log(response);
+                // Quitamos la tabla.
+                $('#tabla-campos-div').empty();                 
+                if(response != null && response != undefined)
+                {  
+                  if(response.codigo == 666)
+                  {
+                    toastr.error('Error : ' + response.mensaje);
+                    return;
+                  }
+                  
+                  var nuevaTabla = 
+                  '<label for="labelTabla" class="form-label">Nombre encabezados</label>\n'
+                  +'<table id="tablaCampos" class="table table-striped dt-responsive w-100 table-bordered display nowrap table-hover mb-0">\n'
+                    +'<thead>\n'
+                      +'<tr>\n'
+
+                  response.encabezados.forEach(columna => {
+                      nuevaTabla = nuevaTabla 
+                      +'<th>'+columna+'</th>\n'                        
+                  });
+                  nuevaTabla = nuevaTabla  
+                    +'</tr>\n'
+                    +'</thead>\n'
+                    +'</table>\n';
+                    $('#tabla-campos-div').prepend(nuevaTabla);            
+
+
+                    $('#tablaCampos').DataTable({
+                    "language":
+                    {
+                      "infoEmpty" : "",
+                      "zeroRecords" : "Solo encabezados"
+                    },
+                    "paging":   false,            
+                    "scrollX": true,
+                    "select": false,  
+                    "searching": false,                  
+                    "dom":'<"toolbar">frtip',
+                  });
+                  toastr.success('Se ha cargado la lista de campos del archivo.');    
+                }              
+                else
+                {
+                  toastr.warning('Error al cargar los campos del archivo');    
+                }
+              },
+              error: function(error)
+              {                            
+                  toastr.error('Error al conectar con el servidor. Error' + error);
+              }
+      });     
+    };
+
+
+
+  
+  $(document).ready(function()
+  {
+    // Funcion para cargar archivos
+    $("#botonCargarArchivo").click(function(){
+
+        var fd = new FormData();
+        var files = $('#archivo_entrada')[0].files;
+        
+        // Check file selected or not
+        if(files.length > 0 )
+        {
+          fd.append('file',files[0]);
+
+          $.ajax({
+              url: '/cargarArchivo',
+              type: 'post',
+              data: fd,
+              contentType: false,
+              processData: false,
+              success: function(response)
+              {
+                if(response.codigo == 200)
+                {                
+                  toastr.success(response.mensaje);
+                  // revisamos si tenemos el listado de los archivos disponibles.
+                  if(response.archivos!=null && response.archivos!= undefined)
+                  {
+                    $('#archivoAnalisis').empty();
+                    response.archivos.forEach(archivo => 
+                    {
+                      var selected = "";
+                      if(archivo==response.archivo){selected = "selected";}
+
+                      nuevoArchivo = '<option value="'+archivo+'" '+selected+' >'+archivo+'</option>';
+                      $('#archivoAnalisis').prepend(nuevoArchivo);
+                    });                  
+                    var nuevoArchivo = '<option value="0">-------------</option>';
+                    $('#archivoAnalisis').prepend(nuevoArchivo);
+                  }
+                }else
+                {
+                    toastr.warning(response.mensaje);
+                }
+              },
+          });
+        }else
+        {
+          toastr.warning("Debe seleccionar un archivo.");
+        }
+    });
+  });
+
+  // Funcion para lanzar el analisis
+  function lanzarAnalisis()
+  {
+    var frm = $("#formularioAnalisis");  
+    console.log(frm.serialize() + '&valoresPredecidos=' + $('#valoresPredecidos').val() );
+    var archivo = document.getElementById("archivoAnalisis").value;
+    if(archivo==="0")
+    {
+      toastr.warning("Debe seleccionar un archivo.")
+      return;
+    }
+    $.ajax({
+              url: '/analisis',
+              type: 'post',
+              data: frm.serialize() + '&valoresPredecidos=' + $('#valoresPredecidos').val(),
+              success: function(response)
+              {                   
+                $('#contenedorResultados').empty();
+                if(response.code == 666)
+                {
+
+                  var campoFecha = 
+                  '<div class="mb-3">\n' 
+                  +'<label for="labelReporteCoeficiente" class="form-label">Fecha análisis</label>\n'
+                  +'<input type="text" class="form-control" id="fecha" name="fecha" value="'+response.timestamp+'" disabled>\n'                  
+                  +'</div>\n';  
+                  $('#contenedorResultados').append(campoFecha);
+
+                  var predicciones = 
+                  '<div class="mb-3">\n'
+                  +'<label for="labelPredicciones" class="form-label">Errores:</label>\n'
+                  +'<input type="text" class="form-control" id="errorM" name="errorM" value="'+response.mensaje+'" disabled>\n'                                     
+                  +'</div>\n';
+                  $('#contenedorResultados').append(predicciones); 
+                  toastr.error("Ha ocurrido un error. "+ response.mensaje);
+                  return;
+                }
+                else
+                {
+                  /*"coeficiente": coeficiente_,
+                  "r2" : r2,
+                  "rmse" : rmse,
+                  "mse" : mse,
+                  "predicciones" : valorpredicciones,
+                  "timestamp": now.strftime("%d/%m/%Y %H:%M:%S")
+                  */
+
+                  var campoFecha = 
+                    '<div class="mb-3">\n' 
+                    +'<label for="labelReporteFecha" class="form-label">Fecha</label>\n'
+                    +'<input type="text" class="form-control" id="campoFecha" name="campoFecha" value="'+response.timestamp+'" disabled>\n'                  
+                    +'</div>\n';  
+                    $('#contenedorResultados').append(campoFecha);  
+
+                  var campoCoeficiente = 
+                    '<div class="mb-3">\n' 
+                    +'<label for="labelReporteCoeficiente" class="form-label">Coeficiente de determinacion R2</label>\n'
+                    +'<input type="text" class="form-control" id="campoCoeficiente" name="campoCoeficiente" value="'+response.coeficiente+'" disabled>\n'                  
+                    +'</div>\n';                    
+                    $('#contenedorResultados').append(campoCoeficiente);  
+
+                    var campoMSE = 
+                    '<div class="mb-3">\n' 
+                    +'<label for="labelReporteCoeficiente" class="form-label">Error Cuadrático medico MSE</label>\n'
+                    +'<input type="text" class="form-control" id="campoCoeficienteMSE" name="campoCoeficienteMSE" value="'+response.mse+'" disabled>\n'                  
+                    +'</div>\n';                    
+                    $('#contenedorResultados').append(campoMSE);                      
+                                  
+                    var campoRMSE = 
+                    '<div class="mb-3">\n' 
+                    +'<label for="labelReporteCoeficiente" class="form-label">Raiz Error Cuadrático medico MSE</label>\n'
+                    +'<input type="text" class="form-control" id="campoCoeficienteRMSE" name="campoCoeficienteRMSE" value="'+response.rmse+'" disabled>\n'                  
+                    +'</div>\n';                    
+                    $('#contenedorResultados').append(campoRMSE); 
+                    
+                    
+                      var predicciones ='';
+                    response.predicciones.forEach(elemento => 
+                    {                      
+                       predicciones = predicciones + ' '+String(elemento) ;
+                    });
+                    
+                    var campoPredicciones = 
+                      '<div class="mb-3">\n' 
+                      +'<label for="labelReporteCoeficiente" class="form-label">Predicciones</label>\n'
+                      +'<input type="text" class="form-control" id="campoPredicciones" name="campoPredicciones" value="'+predicciones+'" disabled>\n'                  
+                      +'</div>\n';                    
+                      $('#contenedorResultados').append(campoPredicciones);                       
+
+
+                    var campoImagen = 
+                    '<div class="mb-3">\n' 
+                    +'<label for="labelReporteCoeficiente" class="form-label">Gráfico de evolución</label>\n'
+                    +'<img width="500" height="500" class="form-control" id="campoImagen" name="campoImagen" src="data:image/png;base64,'+response.img+'" alt="Gráfica" >\n'                  
+                    +'</div>\n';                    
+                    $('#contenedorResultados').append(campoImagen);   
+                    
+                    var campoPDF = 
+                    '<div class="mb-3">\n' 
+                    +'<label for="labelReporteCoeficiente" class="form-label">Descargar Reporte en PDF '+response.nombrePdf+'</label>\n'
+                    +'<br>'
+                    +'<a class="btn btn-primary" target="_blank" href="/obtenerPDF/'+response.nombrePdf+'" role="button">Link</a>'                    
+                    +'</div>\n';                    
+                    $('#contenedorResultados').append(campoPDF);
+                    
+                    
+
+                  console.log(response);
+                  toastr.success('Análisis realizado con éxito. Veo resultados en área de reportes.');
+                }              
+              },
+              error: function(data)
+              {
+                  toastr.error('Error al comunicarse con el servidor');
+              },
+          }); 
+  }
+
+
+
+
+
+</script>
+
+
+{% endblock %}
