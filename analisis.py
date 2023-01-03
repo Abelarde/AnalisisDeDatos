@@ -21,38 +21,18 @@ titulosReportes = ['Tendencia de la infección por Covid-19 ']
 def TendenciaInfeccionLineal(archivo, pais, infecciones, etiquetaPais, feature, predicciones, titulo):
     now = datetime.now()
     try :            
-
-        dataframe = getDataFrame(archivo)           
-
-        #dataframe = dataframe.fillna(lambda x: x.median())
-        ## Filtramos el dataframe para solo tener el pais que se ha indicado    
-        #dataframe = dataframe.loc[dataframe[etiquetaPais] == pais]
+        dataframe = getDataFrame(archivo)
         dataframe = dataframe[dataframe[etiquetaPais] == pais]
-        #dataframe.fillna(0, inplace=True)
-        #dataframe = dataframe[(dataframe.Pais == pais )]
-
-        #dataframe['tmp'] = dataframe[infecciones].cumsum()        
-        #dataframe = dataframe.fillna(lambda x: x.median())
         ## La lista de objetos, es decir las columnas que tienen valores no numericos
-        
-        #listaObjetos = dataframe.select_dtypes(include = ["object", 'datetime']).columns
         listaObjetos = dataframe.select_dtypes(include = ["object", 'datetime'], exclude=['number']).columns
-        #print(listaObjetos)
-
         le =LabelEncoder()
 
         # Feature = caracteristica feat
         for feat in listaObjetos:
             dataframe[feat] = le.fit_transform(dataframe[feat].astype(str))
-        
 
-        #dataframe_caracteristicas = dataframe.drop([infecciones], axis=1)#.reshape((-1,1))
         dataframe_caracteristicas = dataframe[feature].values.reshape(-1,1)
         dataframe_objetivo = dataframe[infecciones]
-
-
-        
-        #dataframe_objetivo = dataframe_objetivo['tmp']
 
         print('Informacion dataframe tratado')
         print(dataframe.info())  
@@ -61,10 +41,8 @@ def TendenciaInfeccionLineal(archivo, pais, infecciones, etiquetaPais, feature, 
         print(dataframe_caracteristicas)
         print('Shape objetivo/target', dataframe_objetivo.shape)
         print(dataframe_objetivo)
-        
-        
+
         modelo = LinearRegression().fit(dataframe_caracteristicas, dataframe_objetivo)
-        
         prediccion_entrenamiento = modelo.predict(dataframe_caracteristicas)
         
         mse = mean_squared_error(y_true = dataframe_objetivo, y_pred = prediccion_entrenamiento)
@@ -77,7 +55,6 @@ def TendenciaInfeccionLineal(archivo, pais, infecciones, etiquetaPais, feature, 
             predicciones = predicciones.split(",")            
         for prediccion in predicciones:
             if prediccion != '':
-                #valorpredicciones[str(prediccion)] = str(modelo.predict([[int(prediccion)]]))
                 valorpredicciones.append(str(modelo.predict([[int(prediccion)]])))
         
                 
@@ -93,13 +70,17 @@ def TendenciaInfeccionLineal(archivo, pais, infecciones, etiquetaPais, feature, 
         for valorprediccion in valorpredicciones:
             tabla = tabla + str(predicciones[index]) +'   '+str(valorprediccion)+'<br>'
             index = index + 1
-        #tabla = tabla + '</tbody></table>'
 
         generarPDF(nombrePDF,titulo + pais, 'Regresión Lineal', tabla)
-        return {"coeficiente": r2, "r2" : r2, "rmse" : rmse, "mse" : mse, "predicciones" : valorpredicciones, "timestamp": now.strftime("%d/%m/%Y %H:%M:%S"),
+        return {
+            "coeficiente": r2,
+            "r2" : r2,
+            "rmse" : rmse,
+            "mse" : mse,
+            "predicciones" : valorpredicciones,
+            "timestamp": now.strftime("%d/%m/%Y %H:%M:%S"),
             "code" : 200,
             "img" : generarGrafica(modelo, dataframe_caracteristicas, dataframe_objetivo, prediccion_entrenamiento, titulo + pais,  ecuacion, 'Fechas' , 'Infectados',nombrePNG),
-            #"img" : generarGrafica(modelo, dataframe_caracteristicas, dataframe_objetivo, prediccion_entrenamiento, titulosReportes[0] , ecuacion, 'Fechas' , 'Infectados','reporte1.png'),
             "nombrePdf":nombrePDF,
             "archivo": generarPDF(nombrePDF,titulo + pais, 'Regresión Lineal', tabla)
         }   
@@ -112,34 +93,34 @@ def TendenciaInfeccionLineal(archivo, pais, infecciones, etiquetaPais, feature, 
         }
 def TendenciaInfeccionRegresionPolinomial(archivo, pais, infecciones, etiquetaPais, feature, predicciones, grados, titulo):
     now = datetime.now()
-    try :            
+    try :
 
-        dataframe = getDataFrame(archivo)   
+        dataframe = getDataFrame(archivo)
         dataframe = dataframe[dataframe[etiquetaPais] == pais]
         dataframe.fillna(0, inplace=True)
-        listaObjetos = dataframe.select_dtypes(include = ["object", 'datetime'], exclude=['number']).columns        
+        listaObjetos = dataframe.select_dtypes(include = ["object", 'datetime'], exclude=['number']).columns
         le =LabelEncoder()
 
-        
+
         for feat in listaObjetos:
             dataframe[feat] = le.fit_transform(dataframe[feat].astype(str))
-        
+
         dataframe_caracteristicas = dataframe[feature].values.reshape(-1,1)
-        dataframe_objetivo = dataframe[infecciones]            
+        dataframe_objetivo = dataframe[infecciones]
         print('Informacion dataframe tratado')
-        print(dataframe.info())  
+        print(dataframe.info())
         print(dataframe)
         print('Shape caracteristicas: ',dataframe_caracteristicas.shape)
         print(dataframe_caracteristicas)
         print('Shape objetivo/target', dataframe_objetivo.shape)
         print(dataframe_objetivo)
-        
+
         modelo = PolynomialFeatures(degree=grados, include_bias=False)
         X_poly = modelo.fit_transform(dataframe_caracteristicas)
         modelo.fit(X_poly, dataframe_objetivo)
         lin_reg2=LinearRegression()
         lin_reg2.fit(X_poly,dataframe_objetivo)
-                
+
         nombrePDF = now.strftime("%d%m%Y%H%M%S") + '.pdf'
         nombrePNG = now.strftime("%d%m%Y%H%M%S") + '.png'
         generarPDF(nombrePDF,titulo + pais, 'Regresión Polinomial', '')
@@ -147,48 +128,38 @@ def TendenciaInfeccionRegresionPolinomial(archivo, pais, infecciones, etiquetaPa
         mse = mean_squared_error(dataframe_objetivo,prediccion_entrenamiento)
         rmse = np.sqrt(mse)
         r2 = r2_score(dataframe_objetivo,prediccion_entrenamiento)
-        #coeficiente_ = lin_reg2.score(dataframe_caracteristicas, dataframe_objetivo)
-        #model_intercept = modelo.intercept_ #b0
-        #model_pendiente = modelo.coef_ #b1        
-        #ecuacion = "Y(x) = "+str(model_pendiente) + "X + (" +str(model_intercept)+')'
         ecuacion ="Y(x) = "
 
-        '''
         valorpredicciones = []
         if(isinstance(predicciones, str)):
-            predicciones = predicciones.split(",")            
-        if len(predicciones) == dataframe_caracteristicas[0].shape:
-            if predicciones != '':
-                #valorpredicciones[str(prediccion)] = str(modelo.predict([[int(prediccion)]]))
-                valorpredicciones.append(str(modelo.predict([[int(predicciones[0])]])))
-        else: 
-            valorpredicciones.append('Se requieren '+ str(dataframe_caracteristicas[0].shape) +' argumentos para esta predicción.')     
-        '''
-        valorpredicciones = []
-        if(isinstance(predicciones, str)):
-            predicciones = predicciones.split(",")            
+            predicciones = predicciones.split(",")
         for prediccion in predicciones:
             if prediccion != '':
-                #valorpredicciones[str(prediccion)] = str(modelo.predict([[int(prediccion)]]))
                 try:
-                    valorpredicciones.append(str(lin_reg2.predict([[predicciones]]))) 
-                except Exception as e: 
-                    valorpredicciones.append(str(e)) 
-                
-        return {"coeficiente": r2, "r2" : r2, "rmse" : rmse, "mse" : mse, "predicciones" : valorpredicciones, "timestamp": now.strftime("%d/%m/%Y %H:%M:%S"),
+                    valorpredicciones.append(str(lin_reg2.predict([[predicciones]])))
+                except Exception as e:
+                    valorpredicciones.append(str(e))
+
+        return {
+            "coeficiente": r2,
+            "r2" : r2,
+            "rmse" : rmse,
+            "mse" : mse,
+            "predicciones" : valorpredicciones,
+            "timestamp": now.strftime("%d/%m/%Y %H:%M:%S"),
             "code" : 200,
             "img" : generarGrafica(modelo, dataframe_caracteristicas, dataframe_objetivo, prediccion_entrenamiento, titulo + pais,  ecuacion, feature , infecciones,nombrePNG),
-            #"img" : generarGrafica(modelo, dataframe_caracteristicas, dataframe_objetivo, prediccion_entrenamiento, titulosReportes[0] , ecuacion, 'Fechas' , 'Infectados','reporte1.png'),
             "nombrePdf":nombrePDF,
             "archivo": generarPDF(nombrePDF,titulo + pais, 'Regresión Polinomial', '')
-        }   
-    except Exception as e: 
+        }
+    except Exception as e:
         print('ERROR!!!!!!!!!!',str(e))
         return {
             "mensaje" : str(e).replace("\"", "-"),
             "code" : 666,
             "timestamp": now.strftime("%d/%m/%Y %H:%M:%S")
         }
+
 def IndiceProgresion(archivo, pais, infecciones, etiquetaPais, feature, predicciones, grados, titulo):
     now = datetime.now()
     try :            
@@ -1068,7 +1039,7 @@ def polinomial(x_name, y_name, datos, degree, nombreImagen):
     plot.savefig('/home/eduardo/Downloads/AnalisisDeDatos/imagenes/'+nombreImagen)
     plot.close()
 
-def arbol():
+def arbol(x_name, y_name, datos, titulo):
     df = pd.read_csv("/home/eduardo/Downloads/AnalisisDeDatos/archivos/penguins.csv").dropna().drop(columns="Unnamed: 0")
     x = df.drop(['species'], axis=1)
     y = df['species']
@@ -1090,14 +1061,14 @@ def arbol():
                        filled=True)
     plot.show()
     
-def tratamento(df):
+def tratamento(x_name, y_name, datos, titulo):
     encoder = ce.OneHotEncoder(cols='island', use_cat_names=True)
     df = encoder.fit_transform(df)
     df['sex'] = np.where(df['sex'] == 'FEMALE', 1, 0)
     df = df.fillna(0)
     return df
 
-def redesBien():
+def redesBien(x_name, y_name, datos, titulo):
     df = pd.read_csv('/home/eduardo/Downloads/AnalisisDeDatos/archivos/diabetes.csv')
     target_column = ['Outcome']
     predictors = list(set(list(df.columns)) - set(target_column))
@@ -1121,7 +1092,7 @@ def redesBien():
     print(confusion_matrix(y_train, predict_train))
     print(classification_report(y_train, predict_train))
 
-def gaussiano():
+def gaussiano(x_name, y_name, datos, titulo):
     return {}
 
 # df = pd.read_csv("https://docs.google.com/spreadsheets/d/1iniHOoi-SXq9yHJRccKD_BOWuGRdzTA2uSD9y12HxfE/export?format=csv")

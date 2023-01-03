@@ -135,9 +135,6 @@ def cargarCampos():
     if request.method == "POST":
         nombreArchivo = request.form["archivo"]
         return jsonify(obtenerEncabezados(nombreArchivo))
-
-
-
 @app.route("/analisis", methods=["POST"])
 def analisis():
     if request.method == "POST":
@@ -153,22 +150,13 @@ def analisis():
             if codigoAnalisis == '2':
                 grados = int(request.form["grados"])
 
-            resultados = polinomial(x_name, y_name, archivoAnalisis, grados, titulo)
-            return jsonify(resultados)
+            return jsonify(polinomial(x_name, y_name, archivoAnalisis, grados, titulo))
 
-        if codigoAnalisis == '3':
-            resultados = gaussiano(x_name, y_name, archivoAnalisis, titulo)
-            return jsonify(resultados)
+        if codigoAnalisis == '3': return jsonify(gaussiano(x_name, y_name, archivoAnalisis, titulo))
 
+        if codigoAnalisis == '4': return jsonify(arbol(x_name, y_name, archivoAnalisis, titulo))
 
-        if codigoAnalisis == '4':
-            resultados = arbol(x_name, y_name, archivoAnalisis, titulo)
-            return jsonify(resultados)
-
-
-        if codigoAnalisis == '5':
-            resultados = redesBien(x_name, y_name, archivoAnalisis, titulo)
-            return jsonify(resultados)
+        if codigoAnalisis == '5': return jsonify(redesBien(x_name, y_name, archivoAnalisis, titulo))
 
     return jsonify({"codigo": 400})
 
