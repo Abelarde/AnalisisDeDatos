@@ -49,46 +49,19 @@
                   </select>                                   
                 </div> 
                 <div class="mb-3" id="tabla-campos-div">                  
-                </div>                               
-                <div class="mb-3">
-                  <label for="prediccion" class="form-label">Predicción a realizar</label>                                      
-                  <select id="tipoAnalisis" name="tipoAnalisis" class="form-select">
-                    <option value="0">-------------</option>
-                    <option value="1">1. Tendencia de la infección por Covid-19 en un país</option>
-                    <option value="2">2. Predicción de Infertados en un País</option>
-                    <option value="3">3. Indice de Progresión de la pandemia</option>
-                    <option value="4">4. Predicción de mortalidad por COVID en un Departamento.</option>
-                    <option value="5">5. Predicción de mortalidad por COVID en un País.</option>
-                    <option value="6">6. Análisis del número de muertes por coronavirus en un País.</option>
-                    <option value="7">7. Tendencia del número de infectados por día de un País.</option>
-                    <option value="8">8. Predicción de casos de un país para un año.</option>
-                    <option value="9">9. Tendencia de la vacunación de en un País.</option>
-                    <option value="10">10. Ánalisis Comparativo de Vacunaciópn entre 2 paises.</option>
-                    <option value="11">11. Porcentaje de hombres infectados por covid-19 en un País desde el primer caso activo</option>
-                    <option value="12">12. Ánalisis Comparativo entres 2 o más paises o continentes.</option>
-                    <option value="13">13. Muertes promedio por casos confirmados y edad de covid 19 en un País.</option>
-                    <option value="14">14. Muertes según regiones de un país - Covid 19.</option>
-                    <option value="15">15. Tendencia de casos confirmados de Coronavirus en un departamento de un País.</option>
-                    <option value="16">16. Porcentaje de muertes frente al total de casos en un país, región o continente.</option>
-                    <option value="17">17. Tasa de comportamiento de casos activos en relación al número de muertes en un continente.</option>
-                    <option value="18">18. Comportamiento y clasificación de personas infectadas por COVID-19 por municipio en un País</option>
-                    <option value="19">19. Predicción de muertes en el último día del primer año de infecciones en un país.</option>
-                    <option value="20">20. Tasa de crecimiento de casos de COVID-19 en relación con nuevos casos diarios y tasa de muerte por COVID-19</option>
-                    <option value="21">21. Predicciones de casos y muertes en todo el mundo - Neural Network MLPRegressor</option>
-                    <option value="22">22. Tasa de mortalidad por coronavirus (COVID-19) en un país.</option>
-                    <option value="23">23. Factores de muerte por COVID-19 en un país.</option>
-                    <option value="24">24. Comparación entre el número de casos detectados y el número de pruebas de un país.</option>
-                    <option value="25">25. Predicción de casos confirmados por día</option>
-                  </select>                                   
                 </div>
                 <div class="mb-3">
-                  <label for="prediccion" class="form-label">Tipo de análisis</label>                                      
-                  <select id="tipoRegresion"  name="tipoRegresion" class="form-select">
-                    <option value="0">Predeterminado</option>
+                  <label for="prediccion" class="form-label">Algoritmo a realizar</label>
+                  <select id="tipoAnalisis" name="tipoAnalisis" class="form-select">
+                    <option value="0">-------------</option>
                     <option value="1">Regresión lineal</option>
                     <option value="2">Regresión polinomial</option>
+                    <option value="3">Clasificador Gaussiano</option>
+                    <option value="4">Clasificador de arboles de decision</option>
+                    <option value="5">Redes neuronales</option>
                   </select>                                   
-                </div>                
+                </div>
+
                 <div class="mb-3" id="parametros-div">                  
                 </div>  
                 <div class="mb-3" id="tablaPredicciones" name="tablaPredicciones">                  
@@ -106,7 +79,8 @@
     </div>           
 </main>
 
-<script type="text/javascript">  
+<script type="text/javascript">
+
   // Primero limpiamos la consola de salida
   document.getElementById("tipoAnalisis").onchange = function()
   {
@@ -240,9 +214,6 @@
       });     
     };
 
-
-
-  
   $(document).ready(function()
   {
     // Funcion para cargar archivos
@@ -412,10 +383,6 @@
               },
           }); 
   }
-
-
-
-
 
 </script>
 

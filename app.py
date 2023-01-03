@@ -9,183 +9,12 @@ ALLOWED_EXTENSIONS = {'csv', 'xls', 'xlsx', 'json'}
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-
 def allowed_file(filename):
     return '.' in filename and \
         filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 def obtenerListaArchivos():
     lista = os.listdir(os.path.join(app.config['UPLOAD_FOLDER']))
     return lista
-def obtenerParametros(option):
-    if option == '1':  ## Tendencia de la infección por Covid-19 en un país
-        parametros = [
-            {'id': 'titulo', 'nombre': 'Título reporte', 'valorActual': "Tendencia de la infección por Covid-19 en "},
-            {'id': 'etiquetaPais', 'nombre': 'Etiqueta País', 'valorActual': "location"},
-            {'id': 'grados', 'nombre': 'Grados', 'valorActual': "6"},
-            {'id': 'nombrePais', 'nombre': 'Nombre del País', 'valorActual': "Guatemala"},
-            {'id': 'etiquetaInfecciones', 'nombre': 'Etiqueta infección por día', 'valorActual': "total_cases"},
-            {'id': 'feature', 'nombre': 'Feature (X)', 'valorActual': "date"}
-
-        ]
-        return parametros
-    if option == '2':  ## Predicción de Infertados en un País
-        parametros = [
-            {'id': 'titulo', 'nombre': 'Título reporte', 'valorActual': "Predicción de Infertados en "},
-            {'id': 'etiquetaPais', 'nombre': 'Etiqueta País', 'valorActual': "location"},
-            {'id': 'grados', 'nombre': 'Grados', 'valorActual': "6"},
-            {'id': 'nombrePais', 'nombre': 'Nombre del País', 'valorActual': "Guatemala"},
-            {'id': 'etiquetaInfecciones', 'nombre': 'Etiqueta infección por día', 'valorActual': "total_cases"},
-            {'id': 'feature', 'nombre': 'Feature (X)', 'valorActual': "date"}
-
-        ]
-        return parametros
-    if option == '3':  ## Predicción de Infertados en un País
-        parametros = [
-            {'id': 'titulo', 'nombre': 'Título reporte', 'valorActual': "Indice de Progresión de la pandemia en "},
-            {'id': 'etiquetaPais', 'nombre': 'Etiqueta País', 'valorActual': "location"},
-            {'id': 'grados', 'nombre': 'Grados', 'valorActual': "6"},
-            {'id': 'nombrePais', 'nombre': 'Nombre del País', 'valorActual': "Guatemala"},
-            {'id': 'etiquetaInfecciones', 'nombre': 'Etiqueta infección por día', 'valorActual': "total_cases"},
-            {'id': 'feature', 'nombre': 'Feature (X)', 'valorActual': "date"}
-
-        ]
-        return parametros
-
-    if option == '4':  ## Predicción de mortalidad por COVID en un Departamento.
-        parametros = [
-            {'id': 'titulo', 'nombre': "Título reporte",
-             'valorActual': 'Predicción de mortalidad por COVID en un Departamento. '},
-            {'id': 'etiquetaDepartamento', 'nombre': 'Etiqueta Departamento', 'valorActual': "departamento"},
-            {'id': 'departamento', 'nombre': 'Departamento', 'valorActual': "GUATEMALA"},
-            {'id': 'grados', 'nombre': 'Grados', 'valorActual': "6"},
-            # {'id': 'nombrePais', 'nombre': 'Nombre del País', 'valorActual': "Guatemala"},
-            {'id': 'etiquetaMortalidad', 'nombre': 'Etiqueta mortalidad', 'valorActual': "casos"},
-            {'id': 'feature', 'nombre': 'Feature (X)', 'valorActual': "fecha"},
-            {'id': 'etiquetaMunicipio', 'nombre': 'Etiqueta Municipio', 'valorActual': "municipio"},
-            {'id': 'municipio', 'nombre': 'Municipio', 'valorActual': "GUATEMALA"},
-
-        ]
-        return parametros
-    if option == '5':  ## Tendencia de la infección por Covid-19 en un país
-        parametros = [
-            {'id': 'titulo', 'nombre': 'Título reporte', 'valorActual': "Predicción de mortalidad por COVID en"},
-            {'id': 'etiquetaPais', 'nombre': 'Etiqueta País', 'valorActual': "location"},
-            {'id': 'grados', 'nombre': 'Grados', 'valorActual': "6"},
-            {'id': 'nombrePais', 'nombre': 'Nombre del País', 'valorActual': "Guatemala"},
-            {'id': 'etiquetaInfecciones', 'nombre': 'Etiqueta de muertes', 'valorActual': "total_cases"},
-            {'id': 'feature', 'nombre': 'Feature (X)', 'valorActual': "date"},
-            {'id': 'etiquetaMuertes', 'nombre': 'Muertes', 'valorActual': "total_deaths"}
-
-        ]
-        return parametros
-    if option == '6':  ## Tendencia de la infección por Covid-19 en un país
-        parametros = [
-            {'id': 'titulo', 'nombre': 'Título reporte',
-             'valorActual': "Análisis del número de muertes por coronavirus en "},
-            {'id': 'etiquetaPais', 'nombre': 'Etiqueta País', 'valorActual': "location"},
-            {'id': 'grados', 'nombre': 'Grados', 'valorActual': "6"},
-            {'id': 'nombrePais', 'nombre': 'Nombre del País', 'valorActual': "Guatemala"},
-            {'id': 'etiquetaInfecciones', 'nombre': 'Etiqueta de muertes', 'valorActual': "total_deaths"},
-            {'id': 'feature', 'nombre': 'Feature (X)', 'valorActual': "date"}
-
-        ]
-        return parametros
-    if option == '7':  ## Tendencia de la infección por Covid-19 en un país
-        parametros = [
-            {'id': 'titulo', 'nombre': 'Título reporte', 'valorActual': "Tendencia de número de muertos en"},
-            {'id': 'etiquetaPais', 'nombre': 'Etiqueta País', 'valorActual': "location"},
-            {'id': 'grados', 'nombre': 'Grados', 'valorActual': "6"},
-            {'id': 'nombrePais', 'nombre': 'Nombre del País', 'valorActual': "Guatemala"},
-            {'id': 'etiquetaInfecciones', 'nombre': 'Etiqueta de muertes', 'valorActual': "total_cases"},
-            {'id': 'feature', 'nombre': 'Feature (X)', 'valorActual': "date"},
-            {'id': 'etiquetaMuertes', 'nombre': 'Muertes', 'valorActual': "total_deaths"}
-        ]
-        return parametros
-    if option == '8':  ## Tendencia de la infección por Covid-19 en un país
-        parametros = [
-            {'id': 'titulo', 'nombre': 'Título reporte', 'valorActual': "Predicción de casos de un país para un año "},
-            {'id': 'etiquetaPais', 'nombre': 'Etiqueta País', 'valorActual': "location"},
-            {'id': 'grados', 'nombre': 'Grados', 'valorActual': "6"},
-            {'id': 'nombrePais', 'nombre': 'Nombre del País', 'valorActual': "Guatemala"},
-            {'id': 'etiquetaInfecciones', 'nombre': 'Etiqueta infección por día', 'valorActual': "total_cases"},
-            {'id': 'feature', 'nombre': 'Feature (X)', 'valorActual': "date"}
-
-        ]
-        return parametros
-    if option == '9':  ## Tendencia de la infección por Covid-19 en un país
-        parametros = [
-            {'id': 'titulo', 'nombre': 'Título reporte', 'valorActual': "Tendencia de la vacunación de en "},
-            {'id': 'etiquetaPais', 'nombre': 'Etiqueta País', 'valorActual': "location"},
-            {'id': 'grados', 'nombre': 'Grados', 'valorActual': "6"},
-            {'id': 'nombrePais', 'nombre': 'Nombre del País', 'valorActual': "Guatemala"},
-            {'id': 'etiquetaInfecciones', 'nombre': 'Tendencia de vacunación', 'valorActual': "total_vaccinations"},
-            {'id': 'feature', 'nombre': 'Feature (X)', 'valorActual': "date"}
-        ]
-        return parametros
-
-    if option == '11':  ## Tendencia de la infección por Covid-19 en un país
-        parametros = [
-            {'id': 'titulo', 'nombre': 'Título reporte',
-             'valorActual': "Porcentaje de hombres infectados por covid-19 en un País desde el primer caso activos en "},
-            {'id': 'etiquetaPais', 'nombre': 'Etiqueta País', 'valorActual': "location"},
-            {'id': 'grados', 'nombre': 'Grados', 'valorActual': "6"},
-            {'id': 'nombrePais', 'nombre': 'Nombre del País', 'valorActual': "Guatemala"},
-            {'id': 'etiquetaInfecciones', 'nombre': 'Tendencia de vacunación', 'valorActual': "total_cases"},
-            {'id': 'feature', 'nombre': 'Feature (X)', 'valorActual': "date"}
-        ]
-        return parametros
-
-    if option == '13':  ## Tendencia de la infección por Covid-19 en un país
-        parametros = [
-            {'id': 'titulo', 'nombre': 'Título reporte',
-             'valorActual': "Muertes promedio por casos confirmados y edad de covid 19 en un"},
-            {'id': 'etiquetaPais', 'nombre': 'Etiqueta País', 'valorActual': "location"},
-            {'id': 'grados', 'nombre': 'Grados', 'valorActual': "6"},
-            {'id': 'nombrePais', 'nombre': 'Nombre del País', 'valorActual': "Guatemala"},
-            {'id': 'etiquetaInfecciones', 'nombre': 'Etiqueta muertes', 'valorActual': "total_deaths"},
-            {'id': 'feature', 'nombre': 'Feature (X)', 'valorActual': "median_age"}
-        ]
-        return parametros
-    if option == '17':  ## Tendencia de la infección por Covid-19 en un país
-        parametros = [
-            {'id': 'titulo', 'nombre': 'Título reporte',
-             'valorActual': "Tasa de comportamiento de casos activos en relación al número de muertes en un continente: "},
-            {'id': 'etiquetaPais', 'nombre': 'Etiqueta País', 'valorActual': "location"},
-            {'id': 'grados', 'nombre': 'Grados', 'valorActual': "6"},
-            {'id': 'nombrePais', 'nombre': 'Nombre del País', 'valorActual': "Guatemala"},
-            {'id': 'etiquetaInfecciones', 'nombre': 'Etiqueta de muertes', 'valorActual': "total_cases"},
-            {'id': 'feature', 'nombre': 'Feature (X)', 'valorActual': "date"},
-            {'id': 'etiquetaMuertes', 'nombre': 'Muertes', 'valorActual': "total_deaths"}
-
-        ]
-        return parametros
-
-    if option == '22':  ## Tendencia de la infección por Covid-19 en un país
-        parametros = [
-            {'id': 'titulo', 'nombre': 'Título reporte',
-             'valorActual': "Tasa de mortalidad por coronavirus (COVID-19) en : "},
-            {'id': 'etiquetaPais', 'nombre': 'Etiqueta País', 'valorActual': "location"},
-            {'id': 'grados', 'nombre': 'Grados', 'valorActual': "6"},
-            {'id': 'nombrePais', 'nombre': 'Nombre del País', 'valorActual': "Guatemala"},
-            {'id': 'etiquetaInfecciones', 'nombre': 'Etiqueta de muertes', 'valorActual': "total_cases"},
-            {'id': 'feature', 'nombre': 'Feature (X)', 'valorActual': "date"},
-            {'id': 'etiquetaMuertes', 'nombre': 'Número de muertes', 'valorActual': "total_deaths"}
-        ]
-        return parametros
-
-    if option == '24':  ## Tendencia de la infección por Covid-19 en un país
-        parametros = [
-            {'id': 'titulo', 'nombre': 'Título reporte',
-             'valorActual': "Comparación entre el número de casos detectados y el número de pruebas de : "},
-            {'id': 'etiquetaPais', 'nombre': 'Etiqueta País', 'valorActual': "location"},
-            {'id': 'grados', 'nombre': 'Grados', 'valorActual': "6"},
-            {'id': 'nombrePais', 'nombre': 'Nombre del País', 'valorActual': "Guatemala"},
-            {'id': 'etiquetaMuertes', 'nombre': 'Etiqueta de muertes', 'valorActual': "total_cases"},
-            {'id': 'feature', 'nombre': 'Feature (X)', 'valorActual': "date"},
-            {'id': 'etiquetaInfecciones', 'nombre': 'Número de pruebas', 'valorActual': "total_tests"}
-
-        ]
-        return parametros
 def obtenerEncabezados(file):
     try:
         if '.csv' in file:  # El archivo es un csv
@@ -232,9 +61,50 @@ def obtenerEncabezados(file):
             "mensaje": str(e),
             "codigo": 666
         }
+def obtenerParametros(option):
+    if option == '1':
+        parametros = [
+            {'id': 'titulo', 'nombre': 'Título reporte', 'valorActual': "Regresion Lineal"},
+            {'id': 'featureX', 'nombre': 'Feature (X)', 'valorActual': "---"},
+            {'id': 'featureY', 'nombre': 'Feature (Y)', 'valorActual': "---"}
+
+        ]
+        return parametros
+    if option == '2':
+        parametros = [
+            {'id': 'titulo', 'nombre': 'Título reporte', 'valorActual': "Regresion Polinomial"},
+            {'id': 'grados', 'nombre': 'Grados', 'valorActual': "6"},
+            {'id': 'featureX', 'nombre': 'Feature (X)', 'valorActual': "---"},
+            {'id': 'featureY', 'nombre': 'Feature (Y)', 'valorActual': "---"}
+
+        ]
+        return parametros
+    if option == '3':
+        parametros = [
+            {'id': 'titulo', 'nombre': 'Título reporte', 'valorActual': "Clasificador Gaussiano"},
+            {'id': 'featureX', 'nombre': 'Feature (X)', 'valorActual': "---"},
+            {'id': 'featureY', 'nombre': 'Feature (Y)', 'valorActual': "---"}
+
+        ]
+        return parametros
+    if option == '4':
+        parametros = [
+            {'id': 'titulo', 'nombre': 'Título reporte', 'valorActual': "Clasificador de arboles de decision"},
+            {'id': 'featureX', 'nombre': 'Feature (X)', 'valorActual': "---"},
+            {'id': 'featureY', 'nombre': 'Feature (Y)', 'valorActual': "---"}
+
+        ]
+        return parametros
+    if option == '5':
+        parametros = [
+            {'id': 'titulo', 'nombre': 'Título reporte', 'valorActual': "Redes neuronales"},
+            {'id': 'featureX', 'nombre': 'Feature (X)', 'valorActual': "---"},
+            {'id': 'featureY', 'nombre': 'Feature (Y)', 'valorActual': "---"}
+
+        ]
+        return parametros
 
 
-## Endpoints
 
 @app.route("/")
 def home():
@@ -242,14 +112,6 @@ def home():
 @app.route("/menu")
 def menu():
     return render_template("menu.html", listaArchivos=obtenerListaArchivos())
-
-
-@app.route("/obtenerPDF/<archivo>", methods=["GET"])
-def reports(archivo):
-    if request.method == "GET":
-        workingdir = os.path.abspath(os.getcwd())
-        filepath = workingdir + '/pdfs/'
-        return send_from_directory(filepath, archivo)
 @app.route("/getParametros", methods=["POST", "GET"])
 def getParametros():
     option = '1'
@@ -270,6 +132,18 @@ def cargarArchivoEntrada():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         return jsonify({"codigo": 200, "mensaje": "Archivo " + file.filename + " almacenado y cargado correctamente.",
                         "archivos": obtenerListaArchivos(), "archivo": file.filename})
+
+
+
+
+@app.route("/obtenerPDF/<archivo>", methods=["GET"])
+def reports(archivo):
+    if request.method == "GET":
+        workingdir = os.path.abspath(os.getcwd())
+        filepath = workingdir + '/pdfs/'
+        return send_from_directory(filepath, archivo)
+
+
 @app.route("/getCampos", methods=["POST"])
 def cargarCampos():
     if request.method == "POST":

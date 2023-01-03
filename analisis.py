@@ -111,7 +111,6 @@ def TendenciaInfeccionLineal(archivo, pais, infecciones, etiquetaPais, feature, 
             "code" : 666,
             "timestamp": now.strftime("%d/%m/%Y %H:%M:%S")
         }
-
 def TendenciaInfeccionRegresionPolinomial(archivo, pais, infecciones, etiquetaPais, feature, predicciones, grados, titulo):
     now = datetime.now()
     try :            
@@ -191,10 +190,6 @@ def TendenciaInfeccionRegresionPolinomial(archivo, pais, infecciones, etiquetaPa
             "code" : 666,
             "timestamp": now.strftime("%d/%m/%Y %H:%M:%S")
         }
-
-
-
-
 def IndiceProgresion(archivo, pais, infecciones, etiquetaPais, feature, predicciones, grados, titulo):
     now = datetime.now()
     try :            
@@ -283,11 +278,6 @@ def IndiceProgresion(archivo, pais, infecciones, etiquetaPais, feature, predicci
             "code" : 666,
             "timestamp": now.strftime("%d/%m/%Y %H:%M:%S")
         }
-
-
-
-
-
 def TendenciaInfeccionPoli(archivo, pais, infecciones, etiquetaPais, feature, predicciones):
     now = datetime.now()
     try :            
@@ -364,10 +354,6 @@ def TendenciaInfeccionPoli(archivo, pais, infecciones, etiquetaPais, feature, pr
             "code" : 666,
             "timestamp": now.strftime("%d/%m/%Y %H:%M:%S")
         }        
-
-
-
-
 def generarGrafica(modelo, X, y, y_predict, titulo, etiqueta,  etiquetaX, etiquetaY, nombreImagen):
     import os
     import io
@@ -395,9 +381,6 @@ def generarGrafica(modelo, X, y, y_predict, titulo, etiqueta,  etiquetaX, etique
     pil_img.save(byte_arr, format='PNG') 
     encoded_img = encodebytes(byte_arr.getvalue()).decode('ascii')
     return encoded_img      
-
-
-
 def getDataFrame(archivo):
     if '.csv' in archivo: # El archivo es un csv
         dataframe = pd.read_csv('/home/eduardo/Downloads/AnalisisDeDatos/archivos/'+archivo)
@@ -414,8 +397,6 @@ def getDataFrame(archivo):
     if '.json' in archivo:
         dataframe = pd.read_json('/home/eduardo/Downloads/AnalisisDeDatos/archivos/'+archivo)
         return dataframe
-
-### Reporte 4. 
 def prediccionMortandadDepartamento(archivo, pais,etiquetaMunicipio, municipio, infecciones, etiquetaPais, feature, predicciones, titulo):
     now = datetime.now()
     try :            
@@ -1167,4 +1148,4 @@ def redesBien():
 
 # df = pd.read_csv("https://docs.google.com/spreadsheets/d/1iniHOoi-SXq9yHJRccKD_BOWuGRdzTA2uSD9y12HxfE/export?format=csv")
 #arbol()
-redesBien()
+#redesBien()
