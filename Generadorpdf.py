@@ -7,7 +7,7 @@ class PDF(FPDF, HTMLMixin):
 
 
 def generarPDF(nombre, titulo, algoritmo, tabla):
-    arr = os.listdir('./imagenes')
+    arr = os.listdir('/home/eduardo/Downloads/AnalisisDeDatos/imagenes')
     now = datetime.now()
     fechahora = now.strftime("%d/%m/%Y %H:%M:%S")
     pdf = PDF()    
@@ -25,10 +25,8 @@ def generarPDF(nombre, titulo, algoritmo, tabla):
     pdf.write_html(f"""  
     <h1>{titulo}</h1>
     <section>
-        <h2 align="center">Erick R. Tejaxún Xicón</h2>        
-        <p><a href="https://github.com/ErickTejaxun/covid-analysis">Github repositorio</a></p>
-        <!--<p align="right">right aligned text</p>
-        
+        <h2 align="center">Josue Eduardo Abelarde Perez</h2>        
+        <!--<p align="right">right aligned text</p>        
         <font color="#00ff00"><p>hello in green</p></font>
         <font size="7"><p>hello small</p></font>
         <font face="helvetica"><p>hello helvetica</p></font>
@@ -53,9 +51,9 @@ def generarPDF(nombre, titulo, algoritmo, tabla):
     """)
 
     for imagen in arr:
-        pdf.image('./imagenes/'+imagen,h=70,w=150,x=30,y=100,type="png")
+        pdf.image('/home/eduardo/Downloads/AnalisisDeDatos/imagenes/'+imagen,h=70,w=150,x=30,y=100,type="png")
 
-    dir = './pdfs/'
+    dir = '/home/eduardo/Downloads/AnalisisDeDatos/pdfs/'
     for f in os.listdir(dir):
         os.remove(os.path.join(dir, f))
     pdf.output(dir+nombre)
