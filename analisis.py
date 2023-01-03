@@ -4,13 +4,12 @@ import matplotlib.pyplot as plot
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 
-import category_encoders as  ce
+import category_encoders as ce
 from sklearn.model_selection import train_test_split
 from sklearn import tree
 
 from Generadorpdf import *
 from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.preprocessing import LabelEncoder
 from datetime import datetime
 from PIL import Image
 
@@ -30,80 +29,30 @@ def getDataFrame(archivo):
     if '.json' in archivo:
         dataframe = pd.read_json('/home/eduardo/Downloads/AnalisisDeDatos/archivos/'+archivo)
         return dataframe
+def generarGrafica(modelo, X, y, y_predict, titulo, etiqueta,  etiquetaX, etiquetaY, nombreImagen):
+    import os
+    import io
+    dir = '/home/eduardo/Downloads/AnalisisDeDatos/imagenes/'
+    for f in os.listdir(dir):
+        os.remove(os.path.join(dir, f))
 
-def TendenciaInfeccionLineal(archivo, pais, infecciones, etiquetaPais, feature, predicciones, titulo):
-    now = datetime.now()
-    try :            
-        dataframe = getDataFrame(archivo)
-        dataframe = dataframe[dataframe[etiquetaPais] == pais]
-        ## La lista de objetos, es decir las columnas que tienen valores no numericos
-        listaObjetos = dataframe.select_dtypes(include = ["object", 'datetime'], exclude=['number']).columns
-        le =LabelEncoder()
+    X_grid=np.arange(min(X),max(X),0.1)
+    X_grid=X_grid.reshape((len(X_grid),1))
+    plot.scatter(X,y,label='Datos reales', color='red')
+    plot.plot(X,y_predict,label='Modelo',color='blue')
+    plot.title(titulo)
+    plot.xlabel(etiquetaX)
+    plot.ylabel(etiquetaY)
+    plot.savefig('/home/eduardo/Downloads/AnalisisDeDatos/imagenes/'+nombreImagen)
+    plot.close()
 
-        # Feature = caracteristica feat
-        for feat in listaObjetos:
-            dataframe[feat] = le.fit_transform(dataframe[feat].astype(str))
-
-        dataframe_caracteristicas = dataframe[feature].values.reshape(-1,1)
-        dataframe_objetivo = dataframe[infecciones]
-
-        print('Informacion dataframe tratado')
-        print(dataframe.info())  
-        print(dataframe)
-        print('Shape caracteristicas: ',dataframe_caracteristicas.shape)
-        print(dataframe_caracteristicas)
-        print('Shape objetivo/target', dataframe_objetivo.shape)
-        print(dataframe_objetivo)
-
-        modelo = LinearRegression().fit(dataframe_caracteristicas, dataframe_objetivo)
-        prediccion_entrenamiento = modelo.predict(dataframe_caracteristicas)
-        
-        mse = mean_squared_error(y_true = dataframe_objetivo, y_pred = prediccion_entrenamiento)
-        rmse = np.sqrt(mse)
-        r2 = r2_score(dataframe_objetivo, prediccion_entrenamiento)
-        coeficiente_ = modelo.score(dataframe_caracteristicas, dataframe_objetivo)
-        
-        valorpredicciones = []
-        if(isinstance(predicciones, str)):
-            predicciones = predicciones.split(",")            
-        for prediccion in predicciones:
-            if prediccion != '':
-                valorpredicciones.append(str(modelo.predict([[int(prediccion)]])))
-        
-                
-        model_intercept = modelo.intercept_ #b0
-        model_pendiente = modelo.coef_ #b1
-
-        ecuacion = "Y(x) = "+str(model_pendiente) + "X + (" +str(model_intercept)+')'
-        nombrePDF = now.strftime("%d%m%Y%H%M%S") + '.pdf'
-        nombrePNG = now.strftime("%d%m%Y%H%M%S") + '.png'
-
-        tabla= ''
-        index = 0
-        for valorprediccion in valorpredicciones:
-            tabla = tabla + str(predicciones[index]) +'   '+str(valorprediccion)+'<br>'
-            index = index + 1
-
-        generarPDF(nombrePDF,titulo + pais, 'Regresión Lineal', tabla)
-        return {
-            "coeficiente": r2,
-            "r2" : r2,
-            "rmse" : rmse,
-            "mse" : mse,
-            "predicciones" : valorpredicciones,
-            "timestamp": now.strftime("%d/%m/%Y %H:%M:%S"),
-            "code" : 200,
-            "img" : generarGrafica(modelo, dataframe_caracteristicas, dataframe_objetivo, prediccion_entrenamiento, titulo + pais,  ecuacion, 'Fechas' , 'Infectados',nombrePNG),
-            "nombrePdf":nombrePDF,
-            "archivo": generarPDF(nombrePDF,titulo + pais, 'Regresión Lineal', tabla)
-        }   
-    except Exception as e: 
-        print('ERROR!!!!!!!!!!',str(e))
-        return {
-            "mensaje" : str(e).replace("\"", "-"),
-            "code" : 666,
-            "timestamp": now.strftime("%d/%m/%Y %H:%M:%S")
-        }
+    from base64 import encodebytes
+    scriptDir = os.path.dirname(__file__)
+    pil_img = Image.open(os.path.join(scriptDir,'/home/eduardo/Downloads/AnalisisDeDatos/imagenes/'+nombreImagen) , mode='r')
+    byte_arr = io.BytesIO()
+    pil_img.save(byte_arr, format='PNG')
+    encoded_img = encodebytes(byte_arr.getvalue()).decode('ascii')
+    return encoded_img
 def polinomial(x_name, y_name, archivoAnalisis, grados, titulo):
     now = datetime.now()
     try :
@@ -119,7 +68,7 @@ def polinomial(x_name, y_name, archivoAnalisis, grados, titulo):
 
         lin_reg2 = LinearRegression()
         lin_reg2.fit(X_poly,y)
-        y_entrenamiento = lin_reg2.predict(X_poly)
+        y_entrenamiento = lin_reg2.predict(X_poly) #print(model.predict([[1.40],[1.90]]))
 
         mse = mean_squared_error(y,y_entrenamiento)
         rmse = np.sqrt(mse)
@@ -151,85 +100,7 @@ def polinomial(x_name, y_name, archivoAnalisis, grados, titulo):
             "timestamp": now.strftime("%d/%m/%Y %H:%M:%S")
         }
 
-
-
-# def polinomial(x_name, y_name, datos, grados, titulo):
-#     x = datos[x_name].values.reshape(-1,1)
-#     y = datos[y_name].values.reshape(-1,1)
-#
-#     poly = PolynomialFeatures(degree=grados, include_bias=False)
-#     x_poly = poly.fit_transform(x)
-#
-#     model = LinearRegression()
-#     model.fit(x_poly,y)
-#     y_pred = model.predict(x_poly)
-#
-#     plot.scatter(x,y)
-#     plot.plot(x,y_pred,color='r')
-#
-#     rmse = np.sqrt(mean_squared_error(y,y_pred))
-#     r2 = r2_score(y,y_pred)
-#     print ('RMSE: ' + str(rmse))
-#     print ('R2: ' + str(r2))
-#
-#     plot.xlabel('etiquetaX')
-#     plot.ylabel('etiquetaY')
-#     plot.title('titulo')
-#     plot.show()
-#     plot.savefig('/home/eduardo/Downloads/AnalisisDeDatos/imagenes/'+titulo)
-#     plot.close()
-
-def generarGrafica(modelo, X, y, y_predict, titulo, etiqueta,  etiquetaX, etiquetaY, nombreImagen):
-    import os
-    import io
-    dir = '/home/eduardo/Downloads/AnalisisDeDatos/imagenes/'
-    for f in os.listdir(dir):
-        os.remove(os.path.join(dir, f))
-
-    X_grid=np.arange(min(X),max(X),0.1)
-    X_grid=X_grid.reshape((len(X_grid),1))
-    plot.scatter(X,y,label='Datos reales', color='red')
-    plot.plot(X,y_predict,label='Modelo',color='blue')
-    plot.title(titulo)
-    plot.xlabel(etiquetaX)
-    plot.ylabel(etiquetaY)
-    plot.savefig('/home/eduardo/Downloads/AnalisisDeDatos/imagenes/'+nombreImagen)
-    plot.close()
-
-
-    from base64 import encodebytes
-    scriptDir = os.path.dirname(__file__)
-    pil_img = Image.open(os.path.join(scriptDir,'/home/eduardo/Downloads/AnalisisDeDatos/imagenes/'+nombreImagen) , mode='r')
-    byte_arr = io.BytesIO()
-    pil_img.save(byte_arr, format='PNG') 
-    encoded_img = encodebytes(byte_arr.getvalue()).decode('ascii')
-    return encoded_img      
-
-
-def lineal(x_name, y_name, datos, titulo):
-    x = datos[x_name].values.reshape(-1,1)
-    y = datos[y_name].values.reshape(-1,1)
-    plot.scatter(x, y, color='red')
-
-    model = LinearRegression()
-    model.fit(x,y)
-    y_pred =model.predict(x) #print(model.predict([[1.40],[1.90]]))
-    plot.plot(x,y_pred, color='blue')
-    rmse = np.sqrt(mean_squared_error(y, y_pred))
-    r2 = r2_score(y,y_pred)
-    print('RMSE', rmse)
-    print('R2', r2)
-    print('Interseccion', model.intercept_)
-    print('Pendiente', model.coef_)
-
-    plot.xlabel('etiquetaX')
-    plot.ylabel('etiquetaY')
-    plot.title('titulo')
-    plot.show()
-    plot.savefig('/home/eduardo/Downloads/AnalisisDeDatos/imagenes/'+titulo)
-    plot.close()
-
-def arbol(x_name, y_name, datos, titulo):
+def arbol(x_name, y_name, archivoAnalisis, titulo):
     df = pd.read_csv("/home/eduardo/Downloads/AnalisisDeDatos/archivos/penguins.csv").dropna().drop(columns="Unnamed: 0")
     x = df.drop(['species'], axis=1)
     y = df['species']
@@ -258,7 +129,7 @@ def tratamento(df):
     df = df.fillna(0)
     return df
 
-def redesBien(x_name, y_name, datos, titulo):
+def redesBien(x_name, y_name, archivoAnalisis, titulo):
     df = pd.read_csv('/home/eduardo/Downloads/AnalisisDeDatos/archivos/diabetes.csv')
     target_column = ['Outcome']
     predictors = list(set(list(df.columns)) - set(target_column))
@@ -282,7 +153,7 @@ def redesBien(x_name, y_name, datos, titulo):
     print(confusion_matrix(y_train, predict_train))
     print(classification_report(y_train, predict_train))
 
-def gaussiano(x_name, y_name, datos, titulo):
+def gaussiano(x_name, y_name, archivoAnalisis, titulo):
     return {}
 
 

@@ -146,7 +146,7 @@ def analisis():
         titulo = request.form["titulo"]
 
         if codigoAnalisis == '1' or codigoAnalisis == '2':
-            grados = 0
+            grados = 1
             if codigoAnalisis == '2':
                 grados = int(request.form["grados"])
 
