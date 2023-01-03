@@ -73,7 +73,7 @@ def obtenerParametros(option):
     if option == '2':
         parametros = [
             {'id': 'titulo', 'nombre': 'Título reporte', 'valorActual': "Regresion Polinomial"},
-            {'id': 'grados', 'nombre': 'Grados', 'valorActual': "6"},
+            {'id': 'grados', 'nombre': 'Grados', 'valorActual': "3"},
             {'id': 'featureX', 'nombre': 'Feature (X)', 'valorActual': "---"},
             {'id': 'featureY', 'nombre': 'Feature (Y)', 'valorActual': "---"}
 
@@ -104,8 +104,6 @@ def obtenerParametros(option):
         ]
         return parametros
 
-
-
 @app.route("/")
 def home():
     return render_template('index.html', listaArchivos=obtenerListaArchivos())
@@ -132,6 +130,47 @@ def cargarArchivoEntrada():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         return jsonify({"codigo": 200, "mensaje": "Archivo " + file.filename + " almacenado y cargado correctamente.",
                         "archivos": obtenerListaArchivos(), "archivo": file.filename})
+@app.route("/getCampos", methods=["POST"])
+def cargarCampos():
+    if request.method == "POST":
+        nombreArchivo = request.form["archivo"]
+        return jsonify(obtenerEncabezados(nombreArchivo))
+
+
+
+@app.route("/analisis", methods=["POST"])
+def analisis():
+    if request.method == "POST":
+        archivoAnalisis = request.form["archivoAnalisis"]
+        codigoAnalisis = request.form["tipoAnalisis"]
+
+        x_name = request.form["featureX"]
+        y_name = request.form["featureY"]
+        titulo = request.form["titulo"]
+
+        if codigoAnalisis == '1' or codigoAnalisis == '2':
+            grados = 0
+            if codigoAnalisis == '2':
+                grados = int(request.form["grados"])
+
+            resultados = polinomial(x_name, y_name, archivoAnalisis, grados, titulo)
+            return jsonify(resultados)
+
+        if codigoAnalisis == '3':
+            resultados = gaussiano(x_name, y_name, archivoAnalisis, titulo)
+            return jsonify(resultados)
+
+
+        if codigoAnalisis == '4':
+            resultados = arbol(x_name, y_name, archivoAnalisis, titulo)
+            return jsonify(resultados)
+
+
+        if codigoAnalisis == '5':
+            resultados = redesBien(x_name, y_name, archivoAnalisis, titulo)
+            return jsonify(resultados)
+
+    return jsonify({"codigo": 400})
 
 
 
@@ -142,191 +181,6 @@ def reports(archivo):
         workingdir = os.path.abspath(os.getcwd())
         filepath = workingdir + '/pdfs/'
         return send_from_directory(filepath, archivo)
-
-
-@app.route("/getCampos", methods=["POST"])
-def cargarCampos():
-    if request.method == "POST":
-        nombreArchivo = request.form["archivo"]
-        return jsonify(obtenerEncabezados(nombreArchivo))
-
-
-@app.route("/analisis", methods=["POST"])
-def analisis():
-    if request.method == "POST":
-        codigoAnalisis = request.form["tipoAnalisis"]
-        archivoAnalisis = request.form["archivoAnalisis"]
-        tipoAnalisis = request.form["tipoAnalisis"]
-        tipoRegresion = request.form["tipoRegresion"]
-        if (
-                codigoAnalisis == '1' or codigoAnalisis == '2' or codigoAnalisis == '6' or codigoAnalisis == '9' or codigoAnalisis == '13'):
-            pais = request.form["nombrePais"]
-            titulo = request.form["titulo"]
-            feature = request.form["feature"]
-            infecciones = request.form["etiquetaInfecciones"]
-            etiquetaPais = request.form["etiquetaPais"]
-            # predicciones = str(request.form.getlist("valoresPredecidos")).split(",")
-            predicciones = request.form.getlist("valoresPredecidos")
-            predicciones = predicciones[0]
-            # (archivo, pais, infecciones, etiquetaPais, predicciones)
-            if (tipoRegresion == '1'):
-                resultados = TendenciaInfeccionLineal(archivoAnalisis, pais, infecciones, etiquetaPais, feature,
-                                                      predicciones, titulo)
-                return jsonify(resultados)
-            if (tipoRegresion == '2' or tipoRegresion == '0'):
-                grados = int(request.form["grados"])
-                resultados = TendenciaInfeccionRegresionPolinomial(archivoAnalisis, pais, infecciones, etiquetaPais,
-                                                                   feature, predicciones, grados, titulo)
-                return jsonify(resultados)
-        if (codigoAnalisis == '3'):
-            pais = request.form["nombrePais"]
-            titulo = request.form["titulo"]
-            feature = request.form["feature"]
-            infecciones = request.form["etiquetaInfecciones"]
-            etiquetaPais = request.form["etiquetaPais"]
-            # predicciones = str(request.form.getlist("valoresPredecidos")).split(",")
-            predicciones = request.form.getlist("valoresPredecidos")
-            predicciones = predicciones[0]
-            # (archivo, pais, infecciones, etiquetaPais, predicciones)
-            if (tipoRegresion == '1'):
-                resultados = IndiceProgresion(archivoAnalisis, pais, infecciones, etiquetaPais, feature, predicciones,
-                                              titulo)
-                return jsonify(resultados)
-            if (tipoRegresion == '2' or tipoRegresion == '0'):
-                grados = int(request.form["grados"])
-                resultados = IndiceProgresion(archivoAnalisis, pais, infecciones, etiquetaPais, feature, predicciones,
-                                              grados, titulo)
-                return jsonify(resultados)
-
-        if (codigoAnalisis == '4'):
-            titulo = request.form["titulo"]
-            feature = request.form["feature"]
-            infecciones = request.form["etiquetaMortalidad"]
-            etiquetaDepartamento = request.form["etiquetaDepartamento"]
-            departamento = request.form["departamento"]
-            # predicciones = str(request.form.getlist("valoresPredecidos")).split(",")
-            predicciones = request.form.getlist("valoresPredecidos")
-            predicciones = predicciones[0]
-            etiquetaMunicipio = request.form["etiquetaMunicipio"]
-            municipio = request.form["municipio"]
-            # (archivo, pais, infecciones, etiquetaPais, predicciones)
-            if (tipoRegresion == '1'):
-                resultados = prediccionMortandadDepartamento(archivoAnalisis, departamento, etiquetaMunicipio,
-                                                             municipio, infecciones, etiquetaDepartamento, feature,
-                                                             predicciones, titulo)
-                return jsonify(resultados)
-            if (tipoRegresion == '2' or tipoRegresion == '0'):
-                grados = int(request.form["grados"])
-                resultados = prediccionMortandadDepartamentoPoli(archivoAnalisis, departamento, etiquetaMunicipio,
-                                                                 municipio, infecciones, etiquetaDepartamento, feature,
-                                                                 predicciones, grados, titulo)
-                return jsonify(resultados)
-                # archivo, pais, infecciones, etiquetaPais, predicciones =[]
-
-        if (codigoAnalisis == '5' or codigoAnalisis == '7' or codigoAnalisis == '22' or codigoAnalisis == '24'):
-            pais = request.form["nombrePais"]
-            titulo = request.form["titulo"]
-            feature = request.form["feature"]
-            infecciones = request.form["etiquetaInfecciones"]
-            etiquetaPais = request.form["etiquetaPais"]
-            etiquetaMuertes = request.form["etiquetaMuertes"]
-            # predicciones = str(request.form.getlist("valoresPredecidos")).split(",")
-            predicciones = request.form.getlist("valoresPredecidos")
-            predicciones = predicciones[0]
-            # (archivo, pais, infecciones, etiquetaPais, predicciones)
-            if (tipoRegresion == '1'):
-                resultados = ReporteLinea05(archivoAnalisis, pais, infecciones, etiquetaMuertes, etiquetaPais, feature,
-                                            predicciones, titulo)
-                return jsonify(resultados)
-            if (tipoRegresion == '2' or tipoRegresion == '0'):
-                grados = int(request.form["grados"])
-                resultados = ReporteLinea05(archivoAnalisis, pais, infecciones, etiquetaMuertes, etiquetaPais, feature,
-                                            predicciones, grados, titulo)
-                return jsonify(resultados)
-        if (codigoAnalisis == '8'):
-            pais = request.form["nombrePais"]
-            titulo = request.form["titulo"]
-            feature = request.form["feature"]
-            infecciones = request.form["etiquetaInfecciones"]
-            etiquetaPais = request.form["etiquetaPais"]
-            # predicciones = str(request.form.getlist("valoresPredecidos")).split(",")
-            predicciones = request.form.getlist("valoresPredecidos")
-            predicciones = predicciones[0]
-            # (archivo, pais, infecciones, etiquetaPais, predicciones)
-            if (tipoRegresion == '1'):
-                resultados = PrediccionCasosAnio(archivoAnalisis, pais, infecciones, etiquetaPais, feature,
-                                                 predicciones, titulo)
-                return jsonify(resultados)
-            if (tipoRegresion == '2' or tipoRegresion == '0'):
-                grados = int(request.form["grados"])
-                resultados = PrediccionCasosAnioPolinomial(archivoAnalisis, pais, infecciones, etiquetaPais, feature,
-                                                           predicciones, grados, titulo)
-                return jsonify(resultados)
-
-        if (codigoAnalisis == '17'):
-            pais = request.form["nombrePais"]
-            titulo = request.form["titulo"]
-            feature = request.form["feature"]
-            infecciones = request.form["etiquetaInfecciones"]
-            etiquetaPais = request.form["etiquetaPais"]
-            etiquetaMuertes = request.form["etiquetaMuertes"]
-            # predicciones = str(request.form.getlist("valoresPredecidos")).split(",")
-            predicciones = request.form.getlist("valoresPredecidos")
-            predicciones = predicciones[0]
-            # (archivo, pais, infecciones, etiquetaPais, predicciones)
-            if (tipoRegresion == '1'):
-                resultados = ReporteLinea17(archivoAnalisis, pais, infecciones, etiquetaMuertes, etiquetaPais, feature,
-                                            predicciones, titulo)
-                return jsonify(resultados)
-            if (tipoRegresion == '2' or tipoRegresion == '0'):
-                grados = int(request.form["grados"])
-                resultados = ReporteLinea17(archivoAnalisis, pais, infecciones, etiquetaMuertes, etiquetaPais, feature,
-                                            predicciones, grados, titulo)
-                return jsonify(resultados)
-        if (codigoAnalisis == '8'):
-            pais = request.form["nombrePais"]
-            titulo = request.form["titulo"]
-            feature = request.form["feature"]
-            infecciones = request.form["etiquetaInfecciones"]
-            etiquetaPais = request.form["etiquetaPais"]
-            # predicciones = str(request.form.getlist("valoresPredecidos")).split(",")
-            predicciones = request.form.getlist("valoresPredecidos")
-            predicciones = predicciones[0]
-            # (archivo, pais, infecciones, etiquetaPais, predicciones)
-            if (tipoRegresion == '1'):
-                resultados = PrediccionCasosAnio(archivoAnalisis, pais, infecciones, etiquetaPais, feature,
-                                                 predicciones, titulo)
-                return jsonify(resultados)
-            if (tipoRegresion == '2' or tipoRegresion == '0'):
-                grados = int(request.form["grados"])
-                resultados = PrediccionCasosAnioPolinomial(archivoAnalisis, pais, infecciones, etiquetaPais, feature,
-                                                           predicciones, grados, titulo)
-                return jsonify(resultados)
-
-        if (codigoAnalisis == '11'):
-            pais = request.form["nombrePais"]
-            titulo = request.form["titulo"]
-            feature = request.form["feature"]
-            infecciones = request.form["etiquetaInfecciones"]
-            etiquetaPais = request.form["etiquetaPais"]
-            # predicciones = str(request.form.getlist("valoresPredecidos")).split(",")
-            predicciones = request.form.getlist("valoresPredecidos")
-            predicciones = predicciones[0]
-            # (archivo, pais, infecciones, etiquetaPais, predicciones)
-            if (tipoRegresion == '1'):
-                grados = int(request.form["grados"])
-                resultados = PorcentajeInfectadosPolinomial(archivoAnalisis, pais, infecciones, etiquetaPais, feature,
-                                                            predicciones, grados, titulo)
-                # resultados = PorcentajeInfectadosPolinomial(archivoAnalisis, pais, infecciones, etiquetaPais, feature, predicciones, titulo)
-                return jsonify(resultados)
-            if (tipoRegresion == '2' or tipoRegresion == '0'):
-                grados = int(request.form["grados"])
-                resultados = PorcentajeInfectadosPolinomial(archivoAnalisis, pais, infecciones, etiquetaPais, feature,
-                                                            predicciones, grados, titulo)
-                # resultados = TendenciaInfeccionRegresionPolinomial(archivoAnalisis, pais, infecciones, etiquetaPais, feature, predicciones, grados ,titulo)
-                return jsonify(resultados)
-    return jsonify({"codigo": 400})
-
 @app.route("/descargar", methods=["POST"])
 def descargar():
     return redirect("/static/ast.gv.pdf")

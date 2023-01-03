@@ -81,6 +81,130 @@
 
 <script type="text/javascript">
 
+  // Funcion para ir a traer las columnas de la tabla.
+  document.getElementById("archivoAnalisis").onchange = function()
+  {
+      var opcion = document.getElementById("archivoAnalisis").value;
+      if(opcion==0)
+      {
+        $('#tabla-campos-div').empty();
+        return;
+      }
+      $.ajax
+      ({
+              type: "POST",
+              url: '/getCampos',
+              dataType: "json",
+              data: {archivo:opcion},
+              success: function(response)
+              {
+                //console.log(response);
+                // Quitamos la tabla.
+                $('#tabla-campos-div').empty();
+                if(response != null && response != undefined)
+                {
+                  if(response.codigo == 666)
+                  {
+                    toastr.error('Error : ' + response.mensaje);
+                    return;
+                  }
+
+                  var nuevaTabla =
+                  '<label for="labelTabla" class="form-label">Nombre encabezados</label>\n'
+                  +'<table id="tablaCampos" class="table table-striped dt-responsive w-100 table-bordered display nowrap table-hover mb-0">\n'
+                    +'<thead>\n'
+                      +'<tr>\n'
+
+                  response.encabezados.forEach(columna => {
+                      nuevaTabla = nuevaTabla
+                      +'<th>'+columna+'</th>\n'
+                  });
+                  nuevaTabla = nuevaTabla
+                    +'</tr>\n'
+                    +'</thead>\n'
+                    +'</table>\n';
+                    $('#tabla-campos-div').prepend(nuevaTabla);
+
+
+                    $('#tablaCampos').DataTable({
+                    "language":
+                    {
+                      "infoEmpty" : "",
+                      "zeroRecords" : "Solo encabezados"
+                    },
+                    "paging":   false,
+                    "scrollX": true,
+                    "select": false,
+                    "searching": false,
+                    "dom":'<"toolbar">frtip',
+                  });
+                  toastr.success('Se ha cargado la lista de campos del archivo.');
+                }
+                else
+                {
+                  toastr.warning('Error al cargar los campos del archivo');
+                }
+              },
+              error: function(error)
+              {
+                  toastr.error('Error al conectar con el servidor. Error' + error);
+              }
+      });
+    };
+
+  // Funcion para cargar archivos
+  $(document).ready(function()
+  {
+    // Funcion para cargar archivos
+    $("#botonCargarArchivo").click(function(){
+
+        var fd = new FormData();
+        var files = $('#archivo_entrada')[0].files;
+
+        // Check file selected or not
+        if(files.length > 0 )
+        {
+          fd.append('file',files[0]);
+
+          $.ajax({
+              url: '/cargarArchivo',
+              type: 'post',
+              data: fd,
+              contentType: false,
+              processData: false,
+              success: function(response)
+              {
+                if(response.codigo == 200)
+                {
+                  toastr.success(response.mensaje);
+                  // revisamos si tenemos el listado de los archivos disponibles.
+                  if(response.archivos!=null && response.archivos!= undefined)
+                  {
+                    $('#archivoAnalisis').empty();
+                    response.archivos.forEach(archivo =>
+                    {
+                      var selected = "";
+                      if(archivo==response.archivo){selected = "selected";}
+
+                      nuevoArchivo = '<option value="'+archivo+'" '+selected+' >'+archivo+'</option>';
+                      $('#archivoAnalisis').prepend(nuevoArchivo);
+                    });
+                    var nuevoArchivo = '<option value="0">-------------</option>';
+                    $('#archivoAnalisis').prepend(nuevoArchivo);
+                  }
+                }else
+                {
+                    toastr.warning(response.mensaje);
+                }
+              },
+          });
+        }else
+        {
+          toastr.warning("Debe seleccionar un archivo.");
+        }
+    });
+  });
+
   // Primero limpiamos la consola de salida
   document.getElementById("tipoAnalisis").onchange = function()
   {
@@ -143,128 +267,6 @@
     });     
   };
 
-  // Funcion para ir a traer las columnas de la tabla.
-  document.getElementById("archivoAnalisis").onchange = function()
-    {
-      var opcion = document.getElementById("archivoAnalisis").value;
-      if(opcion==0) 
-      {
-        $('#tabla-campos-div').empty();  
-        return;
-      }
-      $.ajax
-      ({
-              type: "POST",
-              url: '/getCampos',
-              dataType: "json",
-              data: {archivo:opcion},            
-              success: function(response)
-              {  
-                //console.log(response);
-                // Quitamos la tabla.
-                $('#tabla-campos-div').empty();                 
-                if(response != null && response != undefined)
-                {  
-                  if(response.codigo == 666)
-                  {
-                    toastr.error('Error : ' + response.mensaje);
-                    return;
-                  }
-                  
-                  var nuevaTabla = 
-                  '<label for="labelTabla" class="form-label">Nombre encabezados</label>\n'
-                  +'<table id="tablaCampos" class="table table-striped dt-responsive w-100 table-bordered display nowrap table-hover mb-0">\n'
-                    +'<thead>\n'
-                      +'<tr>\n'
-
-                  response.encabezados.forEach(columna => {
-                      nuevaTabla = nuevaTabla 
-                      +'<th>'+columna+'</th>\n'                        
-                  });
-                  nuevaTabla = nuevaTabla  
-                    +'</tr>\n'
-                    +'</thead>\n'
-                    +'</table>\n';
-                    $('#tabla-campos-div').prepend(nuevaTabla);            
-
-
-                    $('#tablaCampos').DataTable({
-                    "language":
-                    {
-                      "infoEmpty" : "",
-                      "zeroRecords" : "Solo encabezados"
-                    },
-                    "paging":   false,            
-                    "scrollX": true,
-                    "select": false,  
-                    "searching": false,                  
-                    "dom":'<"toolbar">frtip',
-                  });
-                  toastr.success('Se ha cargado la lista de campos del archivo.');    
-                }              
-                else
-                {
-                  toastr.warning('Error al cargar los campos del archivo');    
-                }
-              },
-              error: function(error)
-              {                            
-                  toastr.error('Error al conectar con el servidor. Error' + error);
-              }
-      });     
-    };
-
-  $(document).ready(function()
-  {
-    // Funcion para cargar archivos
-    $("#botonCargarArchivo").click(function(){
-
-        var fd = new FormData();
-        var files = $('#archivo_entrada')[0].files;
-        
-        // Check file selected or not
-        if(files.length > 0 )
-        {
-          fd.append('file',files[0]);
-
-          $.ajax({
-              url: '/cargarArchivo',
-              type: 'post',
-              data: fd,
-              contentType: false,
-              processData: false,
-              success: function(response)
-              {
-                if(response.codigo == 200)
-                {                
-                  toastr.success(response.mensaje);
-                  // revisamos si tenemos el listado de los archivos disponibles.
-                  if(response.archivos!=null && response.archivos!= undefined)
-                  {
-                    $('#archivoAnalisis').empty();
-                    response.archivos.forEach(archivo => 
-                    {
-                      var selected = "";
-                      if(archivo==response.archivo){selected = "selected";}
-
-                      nuevoArchivo = '<option value="'+archivo+'" '+selected+' >'+archivo+'</option>';
-                      $('#archivoAnalisis').prepend(nuevoArchivo);
-                    });                  
-                    var nuevoArchivo = '<option value="0">-------------</option>';
-                    $('#archivoAnalisis').prepend(nuevoArchivo);
-                  }
-                }else
-                {
-                    toastr.warning(response.mensaje);
-                }
-              },
-          });
-        }else
-        {
-          toastr.warning("Debe seleccionar un archivo.");
-        }
-    });
-  });
 
   // Funcion para lanzar el analisis
   function lanzarAnalisis()

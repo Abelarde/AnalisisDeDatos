@@ -18,7 +18,6 @@ from PIL import Image
 titulosReportes = ['Tendencia de la infección por Covid-19 ']
 
 
-
 def TendenciaInfeccionLineal(archivo, pais, infecciones, etiquetaPais, feature, predicciones, titulo):
     now = datetime.now()
     try :            
@@ -492,8 +491,6 @@ def prediccionMortandadDepartamento(archivo, pais,etiquetaMunicipio, municipio, 
             "code" : 666,
             "timestamp": now.strftime("%d/%m/%Y %H:%M:%S")
         }        
-
-
 def prediccionMortandadDepartamentoPoli(archivo, pais, etiquetaMunicipio, municipio, infecciones, etiquetaPais, feature, predicciones, grados, titulo):
     now = datetime.now()
     try :            
@@ -579,7 +576,6 @@ def prediccionMortandadDepartamentoPoli(archivo, pais, etiquetaMunicipio, munici
         }        
 
 ## Reporte 5
-## Análisis del número de muertes por coronavirus en un País.
 def ReporteLinea05(archivo, pais, infecciones, muertes,  etiquetaPais, feature, predicciones, grados, titulo):
     now = datetime.now()
     try :            
@@ -671,9 +667,6 @@ def ReporteLinea05(archivo, pais, infecciones, muertes,  etiquetaPais, feature, 
             "code" : 666,
             "timestamp": now.strftime("%d/%m/%Y %H:%M:%S")
         }
-
-
-## REPORTE 8------------------------------------------------------
 def PrediccionCasosAnio(archivo, pais, infecciones, etiquetaPais, feature, predicciones, titulo):
     now = datetime.now()
     try :            
@@ -767,7 +760,6 @@ def PrediccionCasosAnio(archivo, pais, infecciones, etiquetaPais, feature, predi
             "code" : 666,
             "timestamp": now.strftime("%d/%m/%Y %H:%M:%S")
         }
-
 def PrediccionCasosAnioPolinomial(archivo, pais, infecciones, etiquetaPais, feature, predicciones, grados, titulo):
     now = datetime.now()
     try :            
@@ -847,10 +839,6 @@ def PrediccionCasosAnioPolinomial(archivo, pais, infecciones, etiquetaPais, feat
             "code" : 666,
             "timestamp": now.strftime("%d/%m/%Y %H:%M:%S")
         }
-
-
-### REPORTE NUMERO 11-------------------
-#def PorcentajeInfectadosPolinomial(archivo, pais, infecciones, etiquetaPais, feature, predicciones, grados, titulo):
 def PorcentajeInfectadosPolinomial(archivo, pais, infecciones, etiquetaPais, feature, predicciones, grados, titulo):
     now = datetime.now()
     try :            
@@ -939,9 +927,6 @@ def PorcentajeInfectadosPolinomial(archivo, pais, infecciones, etiquetaPais, fea
             "code" : 666,
             "timestamp": now.strftime("%d/%m/%Y %H:%M:%S")
         }
-
-## Reporte 5
-## Análisis del número de muertes por coronavirus en un País.
 def ReporteLinea17(archivo, pais, infecciones, muertes,  etiquetaPais, feature, predicciones, grados, titulo):
     now = datetime.now()
     try :            
@@ -1034,8 +1019,7 @@ def ReporteLinea17(archivo, pais, infecciones, muertes,  etiquetaPais, feature, 
             "timestamp": now.strftime("%d/%m/%Y %H:%M:%S")
         }
 
-
-def lineal(x_name, y_name, datos, nombreImagen):
+def lineal(x_name, y_name, datos, titulo):
     x = datos[x_name].values.reshape(-1,1)
     y = datos[y_name].values.reshape(-1,1)
     plot.scatter(x, y, color='red')
@@ -1055,7 +1039,7 @@ def lineal(x_name, y_name, datos, nombreImagen):
     plot.ylabel('etiquetaY')
     plot.title('titulo')
     plot.show()
-    plot.savefig('/home/eduardo/Downloads/AnalisisDeDatos/imagenes/'+nombreImagen)
+    plot.savefig('/home/eduardo/Downloads/AnalisisDeDatos/imagenes/'+titulo)
     plot.close()
 
 def polinomial(x_name, y_name, datos, degree, nombreImagen):
@@ -1137,6 +1121,8 @@ def redesBien():
     print(confusion_matrix(y_train, predict_train))
     print(classification_report(y_train, predict_train))
 
+def gaussiano():
+    return {}
 
 # df = pd.read_csv("https://docs.google.com/spreadsheets/d/1iniHOoi-SXq9yHJRccKD_BOWuGRdzTA2uSD9y12HxfE/export?format=csv")
 # lineal('Altura','Peso',df, 'lineal')
