@@ -65,8 +65,8 @@ def obtenerParametros(option):
     if option == '1':
         parametros = [
             {'id': 'titulo', 'nombre': 'Título reporte', 'valorActual': "Regresion Lineal"},
-            {'id': 'featureX', 'nombre': 'Feature (X)', 'valorActual': "---"},
-            {'id': 'featureY', 'nombre': 'Feature (Y)', 'valorActual': "---"}
+            {'id': 'featureX', 'nombre': 'Feature (X)', 'valorActual': "Altura"},
+            {'id': 'featureY', 'nombre': 'Feature (Y)', 'valorActual': "Peso"}
 
         ]
         return parametros
@@ -74,8 +74,8 @@ def obtenerParametros(option):
         parametros = [
             {'id': 'titulo', 'nombre': 'Título reporte', 'valorActual': "Regresion Polinomial"},
             {'id': 'grados', 'nombre': 'Grados', 'valorActual': "3"},
-            {'id': 'featureX', 'nombre': 'Feature (X)', 'valorActual': "---"},
-            {'id': 'featureY', 'nombre': 'Feature (Y)', 'valorActual': "---"}
+            {'id': 'featureX', 'nombre': 'Feature (X)', 'valorActual': "Altura"},
+            {'id': 'featureY', 'nombre': 'Feature (Y)', 'valorActual': "Peso"}
 
         ]
         return parametros
@@ -90,16 +90,18 @@ def obtenerParametros(option):
     if option == '4':
         parametros = [
             {'id': 'titulo', 'nombre': 'Título reporte', 'valorActual': "Clasificador de arboles de decision"},
-            {'id': 'featureX', 'nombre': 'Feature (X)', 'valorActual': "---"},
-            {'id': 'featureY', 'nombre': 'Feature (Y)', 'valorActual': "---"}
+            {'id': 'clasificador', 'nombre': 'clasificador', 'valorActual': "species"},
+            {'id': 'porcentajeEntrenamiento', 'nombre': 'Porcentaje de Entrenamiento', 'valorActual': "0.33"},
+            {'id': 'featureX', 'nombre': 'Feature (X)', 'valorActual': "island"},
+            {'id': 'featureY', 'nombre': 'Feature (Y)', 'valorActual': "sex"}
+
 
         ]
         return parametros
     if option == '5':
         parametros = [
             {'id': 'titulo', 'nombre': 'Título reporte', 'valorActual': "Redes neuronales"},
-            {'id': 'featureX', 'nombre': 'Feature (X)', 'valorActual': "---"},
-            {'id': 'featureY', 'nombre': 'Feature (Y)', 'valorActual': "---"}
+            {'id': 'featureX', 'nombre': 'Feature (X)', 'valorActual': "Outcome"}
 
         ]
         return parametros
@@ -141,22 +143,32 @@ def analisis():
         archivoAnalisis = request.form["archivoAnalisis"]
         codigoAnalisis = request.form["tipoAnalisis"]
 
-        x_name = request.form["featureX"]
-        y_name = request.form["featureY"]
         titulo = request.form["titulo"]
 
         if codigoAnalisis == '1' or codigoAnalisis == '2':
+            x_name = request.form["featureX"]
+            y_name = request.form["featureY"]
             grados = 1
             if codigoAnalisis == '2':
                 grados = int(request.form["grados"])
 
             return jsonify(polinomial(x_name, y_name, archivoAnalisis, grados, titulo))
 
-        if codigoAnalisis == '3': return jsonify(gaussiano(x_name, y_name, archivoAnalisis, titulo))
+        if codigoAnalisis == '3':
+            x_name = request.form["featureX"]
+            y_name = request.form["featureY"]
+            return jsonify(gaussiano(x_name, y_name, archivoAnalisis, titulo))
 
-        if codigoAnalisis == '4': return jsonify(arbol(x_name, y_name, archivoAnalisis, titulo))
+        if codigoAnalisis == '4':
+            clasificador = request.form["clasificador"]
+            porcentajeEntrenamiento = request.form["porcentajeEntrenamiento"]
+            x_name = request.form["featureX"]
+            y_name = request.form["featureY"]
+            return jsonify(arbol(clasificador, archivoAnalisis, porcentajeEntrenamiento, x_name, y_name, titulo))
 
-        if codigoAnalisis == '5': return jsonify(redesBien(x_name, y_name, archivoAnalisis, titulo))
+        if codigoAnalisis == '5':
+            x_name = request.form["featureX"]
+            return jsonify(redesBien(x_name, archivoAnalisis, titulo))
 
     return jsonify({"codigo": 400})
 
