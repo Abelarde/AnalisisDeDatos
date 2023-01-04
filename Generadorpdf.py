@@ -7,7 +7,7 @@ class PDF(FPDF, HTMLMixin):
 
 
 def generarPDF(nombre, titulo, algoritmo, tabla):
-    arr = os.listdir('/home/eduardo/Downloads/AnalisisDeDatos/imagenes')
+    arr = os.listdir('./imagenes')
     now = datetime.now()
     fechahora = now.strftime("%d/%m/%Y %H:%M:%S")
     pdf = PDF()    
@@ -51,9 +51,9 @@ def generarPDF(nombre, titulo, algoritmo, tabla):
     """)
 
     for imagen in arr:
-        pdf.image('/home/eduardo/Downloads/AnalisisDeDatos/imagenes/'+imagen,h=70,w=150,x=30,y=100,type="png")
+        pdf.image('./imagenes/'+imagen,h=70,w=150,x=30,y=100,type="png")
 
-    dir = '/home/eduardo/Downloads/AnalisisDeDatos/pdfs/'
+    dir = './pdfs/'
     for f in os.listdir(dir):
         os.remove(os.path.join(dir, f))
     pdf.output(dir+nombre)

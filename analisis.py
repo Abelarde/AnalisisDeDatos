@@ -15,24 +15,24 @@ from PIL import Image
 
 def getDataFrame(archivo):
     if '.csv' in archivo:
-        dataframe = pd.read_csv('/home/eduardo/Downloads/AnalisisDeDatos/archivos/'+archivo)
+        dataframe = pd.read_csv('./archivos/'+archivo)
         return dataframe
 
     if '.xls' in archivo:
-        dataframe = pd.read_excel('/home/eduardo/Downloads/AnalisisDeDatos/archivos/'+archivo)
+        dataframe = pd.read_excel('./archivos/'+archivo)
         return dataframe
 
     if '.xlsx' in archivo:
-        dataframe = pd.read_excel('/home/eduardo/Downloads/AnalisisDeDatos/archivos/'+archivo)
+        dataframe = pd.read_excel('./archivos/'+archivo)
         return dataframe
 
     if '.json' in archivo:
-        dataframe = pd.read_json('/home/eduardo/Downloads/AnalisisDeDatos/archivos/'+archivo)
+        dataframe = pd.read_json('./archivos/'+archivo)
         return dataframe
 def generarGrafica(modelo, X, y, y_predict, titulo, etiqueta,  etiquetaX, etiquetaY, nombreImagen):
     import os
     import io
-    dir = '/home/eduardo/Downloads/AnalisisDeDatos/imagenes/'
+    dir = './imagenes/'
     for f in os.listdir(dir):
         os.remove(os.path.join(dir, f))
 
@@ -43,12 +43,12 @@ def generarGrafica(modelo, X, y, y_predict, titulo, etiqueta,  etiquetaX, etique
     plot.title(titulo)
     plot.xlabel(etiquetaX)
     plot.ylabel(etiquetaY)
-    plot.savefig('/home/eduardo/Downloads/AnalisisDeDatos/imagenes/'+nombreImagen)
+    plot.savefig('./imagenes/'+nombreImagen)
     plot.close()
 
     from base64 import encodebytes
     scriptDir = os.path.dirname(__file__)
-    pil_img = Image.open(os.path.join(scriptDir,'/home/eduardo/Downloads/AnalisisDeDatos/imagenes/'+nombreImagen) , mode='r')
+    pil_img = Image.open(os.path.join(scriptDir,'./imagenes/'+nombreImagen) , mode='r')
     byte_arr = io.BytesIO()
     pil_img.save(byte_arr, format='PNG')
     encoded_img = encodebytes(byte_arr.getvalue()).decode('ascii')
@@ -103,7 +103,7 @@ def arbol(clasificador, archivoAnalisis, porcentajeEntrenamiento, x_name, y_name
 
     now = datetime.now()
     try :
-        df = pd.read_csv('/home/eduardo/Downloads/AnalisisDeDatos/archivos/'+archivoAnalisis).dropna().drop(columns="Unnamed: 0")
+        df = pd.read_csv('./archivos/'+archivoAnalisis).dropna().drop(columns="Unnamed: 0")
         x = df.drop([clasificador], axis=1)
         y = df[clasificador]
 
@@ -127,7 +127,7 @@ def arbol(clasificador, archivoAnalisis, porcentajeEntrenamiento, x_name, y_name
 
         import os
         import io
-        dir = '/home/eduardo/Downloads/AnalisisDeDatos/imagenes/'
+        dir = './imagenes/'
         for f in os.listdir(dir):
             os.remove(os.path.join(dir, f))
 
@@ -139,13 +139,13 @@ def arbol(clasificador, archivoAnalisis, porcentajeEntrenamiento, x_name, y_name
         plot.title(titulo)
         plot.xlabel(x_name)
         plot.ylabel(y_name)
-        plot.savefig('/home/eduardo/Downloads/AnalisisDeDatos/imagenes/' + nombrePNG)
+        plot.savefig('./imagenes/' + nombrePNG)
         plot.close()
 
         from base64 import encodebytes
         scriptDir = os.path.dirname(__file__)
         pil_img = Image.open(
-        os.path.join(scriptDir, '/home/eduardo/Downloads/AnalisisDeDatos/imagenes/' + nombrePNG), mode='r')
+        os.path.join(scriptDir, './imagenes/' + nombrePNG), mode='r')
         byte_arr = io.BytesIO()
         pil_img.save(byte_arr, format='PNG')
         encoded_img = encodebytes(byte_arr.getvalue()).decode('ascii')
@@ -221,7 +221,52 @@ def redesBien(x_name, archivoAnalisis, titulo):
 
 
 
-def gaussiano(x_name, y_name, archivoAnalisis, titulo):
+def gaussiano():
+
+    now = datetime.now()
+    try :
+
+        train_data = getDataFrame('train_gauss.csv')
+        test_data = getDataFrame('test_gauss.csv')
+
+        features = ["Pclass", "Sex", "SibSp", "Parch"]
+        X_train = pd.get_dummies(train_data[features])
+        y_train = train_data["Survived"]
+        final_X_test = pd.get_dummies(test_data[features])
+
+        from sklearn.gaussian_process.kernels import RBF
+        kernel = 1.0 * RBF(1.0)
+
+        from sklearn.gaussian_process import GaussianProcessClassifier
+        classifier = GaussianProcessClassifier(kernel=kernel)
+
+        classifier.fit(X_train, y_train)
+
+        predictions = classifier.predict(final_X_test)
+
+        output = pd.DataFrame({'PassengerId': test_data.PassengerId,
+                               'Survived': predictions})
+        output.to_csv('./archivos/submission.csv', index=False)
+
+        return {
+            "coeficiente": '',
+            "r2" : '',
+            "rmse" : '',
+            "mse" : '',
+            "timestamp": now.strftime("%d/%m/%Y %H:%M:%S"),
+            "code" : 200,
+            "img" : '',
+            "nombrePdf":'',
+            "archivo": ''
+        }
+    except Exception as e:
+        print('ERROR!!!!!!!!!!',str(e))
+        return {
+            "mensaje" : str(e).replace("\"", "-"),
+            "code" : 666,
+            "timestamp": now.strftime("%d/%m/%Y %H:%M:%S")
+        }
+
     return {}
 
 

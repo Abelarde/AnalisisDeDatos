@@ -3,7 +3,7 @@ from flask import send_from_directory, current_app as app
 from werkzeug.utils import secure_filename
 from analisis import *
 
-UPLOAD_FOLDER = '/home/eduardo/Downloads/AnalisisDeDatos/archivos/'
+UPLOAD_FOLDER = './archivos/'
 ALLOWED_EXTENSIONS = {'csv', 'xls', 'xlsx', 'json'}
 
 app = Flask(__name__)
@@ -81,9 +81,7 @@ def obtenerParametros(option):
         return parametros
     if option == '3':
         parametros = [
-            {'id': 'titulo', 'nombre': 'Título reporte', 'valorActual': "Clasificador Gaussiano"},
-            {'id': 'featureX', 'nombre': 'Feature (X)', 'valorActual': "---"},
-            {'id': 'featureY', 'nombre': 'Feature (Y)', 'valorActual': "---"}
+            {'id': 'titulo', 'nombre': 'Título reporte', 'valorActual': "Clasificador Gaussiano"}
 
         ]
         return parametros
@@ -155,9 +153,7 @@ def analisis():
             return jsonify(polinomial(x_name, y_name, archivoAnalisis, grados, titulo))
 
         if codigoAnalisis == '3':
-            x_name = request.form["featureX"]
-            y_name = request.form["featureY"]
-            return jsonify(gaussiano(x_name, y_name, archivoAnalisis, titulo))
+            return jsonify(gaussiano())
 
         if codigoAnalisis == '4':
             clasificador = request.form["clasificador"]
@@ -171,9 +167,6 @@ def analisis():
             return jsonify(redesBien(x_name, archivoAnalisis, titulo))
 
     return jsonify({"codigo": 400})
-
-
-
 
 @app.route("/obtenerPDF/<archivo>", methods=["GET"])
 def reports(archivo):
